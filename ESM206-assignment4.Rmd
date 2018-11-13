@@ -1,0 +1,10 @@
+---
+title: "ESM206-assignment4"
+author: "Claire Madden"
+date: "11/12/2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
