@@ -16,6 +16,7 @@ library(vcdExtra)
 library(RColorBrewer)
 library(dplyr)
 library(car)
+library(effsize)
 
 ```
 
@@ -56,7 +57,7 @@ size_tidy <- lobster_size_tidy %>%
 
 size_2017 <- size_tidy %>% 
   filter(YEAR == "2017") %>%
-  select(SIZE, Site) %>% 
+  select(SIZE, Site)
 
 carapace_hist <- ggplot(size_2017, aes(x = SIZE))+
   geom_histogram(bins = 23, aes(fill = Site))+
@@ -83,8 +84,17 @@ carapace_qq
 carapace_levene <- leveneTest(SIZE ~ Site, data = size_2017)
 carapace_levene
 
-#We reject the null hypothesis of equal variances (p < .001).  The only example we used in lab with Levene's test was retaining the null, so currently unsure of what to do here.  In lab, we next did a variance summary table, ANOVA, and Tukey's post-hoc.
+#We reject the null hypothesis of equal variances (p < .001).  Thus, we must use the Kruskal-Wallis test, a non-parametric alternative to one-way ANOVA.
 
+#H0: All ranks are equal, no difference in median carapace size between locations
+#HA: At least two ranks differ, at least one difference in group medians between locations
+
+carapace_kwt <- kruskal.test(Site ~ SIZE, data = size_2017)
+carapace_kwt  #not sure if this is the right sequence of variables for this test
+
+#We retain the null hypothesis of equal variances (p = .291), and assume no difference in median carapace size between locations.
+
+#Since there is no difference in medians between locations, we do not need to run Cliff's Delta for effect size, and Tukey's post-hoc test doesn't apply for non-ANOVA testing.
 
 ```
 
