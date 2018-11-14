@@ -1,6 +1,6 @@
 ---
 title: "ESM206-assignment4"
-author: "Claire Madden"
+author: "Claire Madden, Bridget Gibbons, Andrew Paterson"
 date: "11/12/2018"
 output: word_document
 ---
@@ -8,3 +8,21 @@ output: word_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r, echo=FALSE, message=FALSE}
+
+library(tidyverse)
+library(vcdExtra)
+library(RColorBrewer)
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+
+lobster_size <- read_csv("lobster_size_abundance.csv")
+lobster_traps <- read_csv("lobster_traps.csv")
+
+```
+
+#Part 2 (Andrew)
+
