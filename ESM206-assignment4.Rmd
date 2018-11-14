@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(vcdExtra)
 library(RColorBrewer)
+library(dplyr)
+library(car)
 
 ```
 
@@ -50,10 +52,39 @@ size_tidy <- lobster_size_tidy %>%
 
 ```{r}
 
+#Filter for just 2017 results for Part 2, and Exploratory Histogram and QQ Plots
 
-size_2017 <- size_tidy
+size_2017 <- size_tidy %>% 
+  filter(YEAR == "2017") %>%
+  select(SIZE, Site) %>% 
 
-carapace_hist <- ggplot(lobster_size_tidy, aes(x = ))
+carapace_hist <- ggplot(size_2017, aes(x = SIZE))+
+  geom_histogram(bins = 23, aes(fill = Site))+
+  facet_wrap(~Site)
+
+carapace_hist
+
+carapace_qq <- ggplot(size_2017, aes(sample = SIZE))+
+  geom_qq()+
+  facet_wrap(~Site)
+
+carapace_qq
+
+#The data looks roughly normally distributed, and all sites have a sample size of greater than 30. 
+
+```
+
+```{r}
+
+#Levene's Test for Equal Variances, since we have more than two groups
+#H0: Variances are equal
+#HA: Variances are not equal
+
+carapace_levene <- leveneTest(SIZE ~ Site, data = size_2017)
+carapace_levene
+
+#We reject the null hypothesis of equal variances (p < .001).  The only example we used in lab with Levene's test was retaining the null, so currently unsure of what to do here.  In lab, we next did a variance summary table, ANOVA, and Tukey's post-hoc.
+
 
 ```
 
