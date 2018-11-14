@@ -24,12 +24,36 @@ lobster_traps <- read_csv("lobster_traps.csv")
 
 ```
 
-#Part 2 (Andrew)
 
 ```{r}
 
 lobster_size2 <- as.data.frame(lobster_size)
 lobster_size_tidy <- expand.dft(lobster_size2, freq = "COUNT")
+
+#If you guys don't want to change the site name here, no problem!
+size_tidy <- lobster_size_tidy %>% 
+  mutate(Site=
+    case_when(
+      SITE == "NAPL" ~ "Naples Reef",
+      SITE == "AQUE" ~ "Arroyo Quemado",
+      SITE == "MOHK" ~ "Mohawk Reef",
+      SITE == "IVEE" ~ "Isla Vista",
+      SITE == "CARP" ~ "Carpinteria"
+    )
+  ) %>% 
+  select(-SITE)
+
+
+```
+
+#Part 2 (Andrew)
+
+```{r}
+
+
+size_2017 <- size_tidy
+
+carapace_hist <- ggplot(lobster_size_tidy, aes(x = ))
 
 ```
 
