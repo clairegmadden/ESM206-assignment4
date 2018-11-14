@@ -26,3 +26,10 @@ lobster_traps <- read_csv("lobster_traps.csv")
 
 #Part 2 (Andrew)
 
+```{r}
+
+lobster_size2 <- as.data.frame(lobster_size)
+lobster_size_tidy <- expand.dft(lobster_size2, freq = "COUNT")
+
+```
+
