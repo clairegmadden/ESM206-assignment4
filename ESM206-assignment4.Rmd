@@ -67,8 +67,7 @@ traps_tidy <- lobster_traps %>%
 abundance_summary <- lobster_size %>%
   group_by(SITE, YEAR) %>% 
   summarize(
-    count = length(COUNT)
-  )
+    count = sum(COUNT))
 
 abundance_column <- ggplot(abundance_summary, aes( x = YEAR, y = count))+
   geom_col()+
@@ -83,18 +82,49 @@ traps_simple <- lobster_traps %>%
 traps_summary <- traps_simple %>% 
   group_by(SITE, YEAR) %>% 
   summarize(
-    traps = length(TRAPS)
-  )
+    traps = sum(TRAPS))
 
 traps_column <- ggplot(traps_summary, aes( x = YEAR, y = traps))+
   geom_col()+
   facet_wrap(~SITE)
 
 traps_column
-abundance_column
+
+
+abundance_scatter <- ggplot(abundance_summary, aes(x = YEAR, y = count))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~SITE)
+
+abundance_scatter
+
+traps_scatter <- ggplot(traps_summary, aes(x = YEAR, y = traps))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~SITE)
+
+traps_scatter
 
 ```
 
+```{r}
+# my attempt at joining the data before graphing and or getting both graphs for one location on the same plane
+
+abundance_traps <- full_join(abundance_summary, traps_summary)
+
+
+both_scatter <- ggplot(abundance_traps, aes(x = YEAR))+
+  geom_line(aes(y=count, color = "blue"))+
+  geom_line(aes(y=traps, color = "red"))+
+  facet_wrap(~SITE)+
+  theme_light()
+
+both_scatter
+
+
+
+
+```
 
 
 #Part 2 (Andrew)
