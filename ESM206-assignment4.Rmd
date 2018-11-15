@@ -346,6 +346,7 @@ aq_effsize
 
 #effect size is small (-0.256)
 ```
+
 ```{r}
 #Site 2: Carpinteria - nonMPA
 
@@ -572,7 +573,7 @@ legal_sizes <- lobster_size_tidy %>%
   filter(YEAR == 2017) %>% 
   filter(SIZE != "-99999") %>% 
   select(YEAR, SITE, SIZE) %>% 
-  mutate(legality = ifelse(SIZE > 83, "legal", "illegal")) %>% 
+  mutate(legality = ifelse(SIZE > 82, "legal", "illegal")) %>% 
   count(SITE, legality) %>% 
   spread(legality, n) %>% 
   select(-SITE)
