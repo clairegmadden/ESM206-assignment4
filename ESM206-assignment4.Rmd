@@ -181,6 +181,16 @@ carapace_variances
 carapace_aov <- aov(SIZE ~ Site, data = size_2017)
 summary(carapace_aov)
 
+#boxplot for ANOVA in case we want to include this
+lobster_anova <- ggplot(size_2017, aes(x = Site, y = SIZE))+
+  geom_boxplot()+
+  scale_x_discrete()+
+  scale_y_discrete()+
+  ylab("Size")+
+  xlab("Site")
+
+lobster_anova
+
 #With p = .0085, we reject the null, and assume mean carapace length varies between lobsters from at least two sites. At least two populations were taken from populations with different means.
 
 #Post-hoc testing using Tukey's HSD
