@@ -115,10 +115,13 @@ abundance_traps <- full_join(abundance_summary, traps_summary)
 
 
 both_scatter <- ggplot(abundance_traps, aes(x = YEAR))+
-  geom_line(aes(y=count, color = "blue"))+
-  geom_line(aes(y=traps, color = "red"))+
+  geom_line(aes(y=count, color = "count"))+
+  geom_line(aes(y=traps, color = "traps"))+
   facet_wrap(~SITE)+
-  theme_light()
+  theme_light()+
+  scale_x_continuous(expand = c(0,0))+
+  labs( x = "Year",
+        y = "Lobsters/Traps")
 
 both_scatter
 
