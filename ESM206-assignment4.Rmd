@@ -391,3 +391,67 @@ non_mpa_size_summary <- non_mpa_size_ordered %>%
 non_mpa_size_summary
 ```
 
+#The following chunks are comparing 2012 and 2017 for each site individually - doesn't seem like these make sense, so probably go with the above analysis
+
+```{r}
+#Isla Vista
+
+lobster_sizes_iv <- lobster_size_tidy %>% 
+  filter(SITE == "IVEE") %>% 
+  filter(YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE)
+
+#Create exploratory histogram and qq plot
+
+iv_size_hist <- ggplot(lobster_sizes_iv, aes(x = SIZE)) +
+  geom_histogram(bins = 8) +
+  facet_wrap(~YEAR)
+
+iv_size_hist
+  
+iv_size_qq <- ggplot(lobster_sizes_iv, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~YEAR)
+
+iv_size_qq
+
+iv_summary <- lobster_sizes_iv %>% 
+  group_by(YEAR) %>% 
+  summarize(mean = mean(SIZE), n = length(SIZE))
+
+iv_summary
+
+#QQ plot for 2012 does not look normal, only have 26 observations so can't use CLT
+```
+
+```{r}
+#Naples
+
+lobster_sizes_napl <- lobster_size_tidy %>% 
+  filter(SITE == "NAPL") %>% 
+  filter(YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE)
+
+#Create exploratory histogram and qq plot
+
+napl_size_hist <- ggplot(lobster_sizes_napl, aes(x = SIZE)) +
+  geom_histogram(bins = 8) +
+  facet_wrap(~YEAR)
+
+napl_size_hist
+  
+napl_size_qq <- ggplot(lobster_sizes_napl, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~YEAR)
+
+napl_size_qq
+
+napl_summary <- lobster_sizes_napl %>% 
+  group_by(YEAR) %>% 
+  summarize(mean = mean(SIZE), n = length(SIZE))
+
+napl_summary
+```
+
+#Part 4
+
