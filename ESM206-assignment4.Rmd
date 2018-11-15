@@ -71,12 +71,6 @@ abundance_summary <- lobster_size %>%
   summarize(
     count = sum(COUNT))
 
-abundance_column <- ggplot(abundance_summary, aes( x = YEAR, y = count))+
-  geom_col()+
-  facet_wrap(~SITE)
-
-abundance_column
-
 
 traps_simple <- lobster_traps %>% 
   filter(SITE == "AQUE" | SITE == "NAPL" | SITE == "MOHK" | SITE == "IVEE" | SITE == "CARP")
@@ -86,26 +80,6 @@ traps_summary <- traps_simple %>%
   summarize(
     traps = sum(TRAPS))
 
-traps_column <- ggplot(traps_summary, aes( x = YEAR, y = traps))+
-  geom_col()+
-  facet_wrap(~SITE)
-
-traps_column
-
-
-abundance_scatter <- ggplot(abundance_summary, aes(x = YEAR, y = count))+
-  geom_point()+
-  geom_line()+
-  facet_wrap(~SITE)
-
-abundance_scatter
-
-traps_scatter <- ggplot(traps_summary, aes(x = YEAR, y = traps))+
-  geom_point()+
-  geom_line()+
-  facet_wrap(~SITE)
-
-traps_scatter
 
 ```
 
@@ -122,7 +96,8 @@ both_scatter <- ggplot(abundance_traps, aes(x = YEAR))+
   theme_light()+
   scale_x_continuous(expand = c(0,0))+
   labs( x = "Year",
-        y = "Lobsters/Traps")
+        y = "Count")+
+  
 
 both_scatter
 
