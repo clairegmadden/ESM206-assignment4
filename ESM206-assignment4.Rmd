@@ -3,6 +3,7 @@ title: "ESM206-assignment4"
 author: "Claire Madden, Bridget Gibbons, Andrew Paterson"
 date: "11/12/2018"
 output: word_document
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -228,233 +229,335 @@ size_final
 
 #Part 3 (Bridget)
 
-##These chunks are lumping all the MPV sites together and then comparing 2012 and 2017, and then doing the same thing for non-MPV sites. If we need to do it site by site, this all needs to be changed
+#The following chunks are comparing 2012 and 2017 for each site individually 
 
-#MPA sites: Isla Vista, Naples Reef
-#Non-MPA sites:Arroyo Quemado, Carpinteria, Mohawk Reef
 ```{r}
+#MPA Sites data frames
 
-#For the MPA sites
+mpa_size_2012 <- lobster_size_tidy %>% 
+  filter(SITE == "IVEE" | SITE == "NAPL", YEAR == "2012") %>% 
+  select(YEAR, SITE, SIZE)
 
-mpa_size <- lobster_size_tidy %>% 
-  filter(SITE == "IVEE" | SITE == "NAPL") %>% 
-  filter(YEAR == "2012" | YEAR == "2017") %>% 
-  select(YEAR, SIZE)
-  
-  
-#Need to test for normality to determine which kind of test to run
+mpa_size_2017 <- lobster_size_tidy %>% 
+  filter(SITE == "IVEE" | SITE == "NAPL", YEAR == "2017") %>% 
+  select(YEAR, SITE, SIZE)
 
-mpa_size_hist <- ggplot(mpa_size, aes(x = SIZE)) + 
+```
+
+```{r}
+#MPA Sites exploratory histograms and qq plots
+
+mpa_2012_hist <- ggplot(mpa_size_2012, aes(x = SIZE)) + 
   geom_histogram(bins = 8) +
-  facet_wrap(~YEAR, scale = "free")
-  
-mpa_size_hist
+  facet_wrap(~ SITE)
 
-mpa_size_qq <- ggplot (mpa_size, aes(sample = SIZE)) +
+mpa_2012_hist
+
+mpa_2012_qq <- ggplot(mpa_size_2012, aes(sample = SIZE)) +
   geom_qq() +
-  facet_wrap(~YEAR)
+  facet_wrap(~ SITE)
 
-mpa_size_qq
+mpa_2012_qq
 
-#The data for 2017 looks normally distributed, but the qq plot for 2012 doesn't look linear. We have more than 30 samples for each year though so we can still use a t-test
-
-mpa_2012 <- mpa_size %>% 
-  filter(YEAR == "2012") %>% 
-  pull(SIZE)
-
-mpa_2017 <- mpa_size %>% 
-  filter(YEAR == "2017") %>% 
-  pull(SIZE)
-
-#Run an F-test to see which type of t-test we can use
-#H0: ratio of variances is equal to 1
-#HA: ratio of variances is NOT equal to 1
-
-mpa_ftest <- var.test(mpa_2012, mpa_2017)
-mpa_ftest
-
-#Based on result of F-test (p = 0.3346), we retain null hypothesis that variances are equal. We can use a student's t-test, which is more powerful than a Welch's test
-
-#H0 - difference in means is 0
-#HA - difference in means is NOT 0
-
-mpa_ttest <- t.test(mpa_2012, mpa_2017, var.equal = TRUE)
-mpa_ttest
-
-#With p-value of 0.05576, we retain null hypothesis. There is not a significant difference in mean lobster size in MPAs between 2012 and 2017.
-
-#Calculate effect size
-
-mpa_eff_size <- cohen.d(mpa_2012, mpa_2017)
-mpa_eff_size
-
-#There is a small effect size (-0.34)
-```
-
-```{r}
-#Boxplot for MPA
-mpa_size_ordered <- mpa_size %>% 
-  mutate(YEAR = factor(YEAR)) %>% 
-  group_by(YEAR)
-
-mpa_size_boxplot <- ggplot(mpa_size_ordered, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
-
-mpa_size_boxplot
-
-#Summary table with mean values
-
-mpa_size_summary <- mpa_size_ordered %>%
-  summarize(
-    size = mean(SIZE),
-    n = length(YEAR)
-  )
-
-mpa_size_summary
-
-```
-
-```{r}
-#For the non-mpa sites
-
-non_mpa_size <- lobster_size_tidy %>% 
-  filter(SITE == "AQUE" | SITE == "MOHK" | SITE == "CARP") %>% 
-  filter(YEAR == "2012" | YEAR == "2017") %>% 
-  select(YEAR, SIZE)
-  
-  
-#Need to test for normality to determine which kind of test to run
-
-non_mpa_size_hist <- ggplot(non_mpa_size, aes(x = SIZE)) + 
+mpa_2017_hist <- ggplot(mpa_size_2017, aes(x = SIZE)) + 
   geom_histogram(bins = 8) +
-  facet_wrap(~YEAR, scale = "free")
-  
-non_mpa_size_hist
+  facet_wrap(~ SITE)
 
-non_mpa_size_qq <- ggplot (non_mpa_size, aes(sample = SIZE)) +
+mpa_2017_hist
+
+mpa_2017_qq <- ggplot(mpa_size_2017, aes(sample = SIZE)) +
   geom_qq() +
-  facet_wrap(~YEAR)
+  facet_wrap(~ SITE)
 
-non_mpa_size_qq
-
-#The data looks normally distributed
-
-non_mpa_2012 <- non_mpa_size %>% 
-  filter(YEAR == "2012") %>% 
-  pull(SIZE)
-
-non_mpa_2017 <- non_mpa_size %>% 
-  filter(YEAR == "2017") %>% 
-  pull(SIZE)
-
-#Run an F-test to see which type of t-test we can use
-#H0: ratio of variances is equal to 1
-#HA: ratio of variances is NOT equal to 1
-
-non_mpa_ftest <- var.test(non_mpa_2012, non_mpa_2017)
-non_mpa_ftest
-
-#Based on result of F-test (p = 0.953), we retain null hypothesis that variances are equal. We can use a student's t-test, which is more powerful than a Welch's test
-
-#H0 - difference in means is 0
-#HA - difference in means is NOT 0
-
-non_mpa_ttest <- t.test(non_mpa_2012, non_mpa_2017, var.equal = TRUE)
-non_mpa_ttest
-
-#With p-value of 0.007, we reject the null hypothesis. There is a significant difference in mean lobster size in non-MPAs between 2012 and 2017.
-
-#Calculate effect size
-
-non_mpa_eff_size <- cohen.d(non_mpa_2012, non_mpa_2017)
-non_mpa_eff_size
-
-#There is a small effect size (0.21)
+mpa_2017_qq
 ```
 
 ```{r}
-#Boxplot for Non-MPA
-non_mpa_size_ordered <- non_mpa_size %>% 
-  mutate(YEAR = factor(YEAR)) %>% 
-  group_by(YEAR)
+#NonMPA sites data frames
 
-non_mpa_size_boxplot <- ggplot(non_mpa_size_ordered, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
+nonmpa_size_2012 <- lobster_size_tidy %>% 
+  filter(SITE == "AQUE" | SITE == "MOHK" | SITE == "CARP", YEAR == "2012") %>% 
+  select(YEAR, SITE, SIZE)
 
-non_mpa_size_boxplot
-
-#Summary table with mean values
-
-non_mpa_size_summary <- non_mpa_size_ordered %>%
-  summarize(
-    size = mean(SIZE),
-    n = length(YEAR)
-  )
-
-non_mpa_size_summary
+nonmpa_size_2017 <- lobster_size_tidy %>% 
+  filter(SITE == "AQUE" | SITE == "MOHK" | SITE == "CARP", YEAR == "2017") %>% 
+  select(YEAR, SITE, SIZE)
 ```
 
-#The following chunks are comparing 2012 and 2017 for each site individually - doesn't seem like these make sense, so probably go with the above analysis
+```{r}
+#NonMPA Sites exploratory histograms and qq plots
+
+nonmpa_2012_hist <- ggplot(nonmpa_size_2012, aes(x = SIZE)) + 
+  geom_histogram(bins = 8) +
+  facet_wrap(~ SITE)
+
+nonmpa_2012_hist
+
+nonmpa_2012_qq <- ggplot(nonmpa_size_2012, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~ SITE)
+
+nonmpa_2012_qq
+
+nonmpa_2017_hist <- ggplot(nonmpa_size_2017, aes(x = SIZE)) + 
+  geom_histogram(bins = 8) +
+  facet_wrap(~ SITE)
+
+nonmpa_2017_hist
+
+nonmpa_2017_qq <- ggplot(nonmpa_size_2017, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~ SITE)
+
+nonmpa_2017_qq
+```
 
 ```{r}
+#Site 1: Arroyo Quemado - nonMPA
+
+#Make vectors for the 2012 and 2017 values
+
+aq_2012 <- nonmpa_size_2012 %>% 
+  filter(SITE == "AQUE") %>% 
+  pull(SIZE)
+
+aq_2017 <- nonmpa_size_2017 %>% 
+  filter(SITE == "AQUE") %>% 
+  pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+
+aq_ftest <- var.test(aq_2012, aq_2017)
+aq_ftest
+
+#Retain null, variances are equal. Run student's t-test
+
+aq_ttest <- t.test(aq_2012, aq_2017, var.equal = TRUE)
+aq_ttest
+
+#p-valye of 0.2097, no significant difference in lobster sizes
+
+#calculate effect size
+
+aq_effsize <- cohen.d(aq_2012, aq_2017)
+aq_effsize
+
+#effect size is small (-0.256)
+```
+```{r}
+#Site 2: Carpinteria - nonMPA
+
+#Make vectors for the 2012 and 2017 values
+
+carp_2012 <- nonmpa_size_2012 %>% 
+  filter(SITE == "CARP") %>% 
+  pull(SIZE)
+
+carp_2017 <- nonmpa_size_2017 %>% 
+  filter(SITE == "CARP") %>% 
+  pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+
+carp_ftest <- var.test(carp_2012, carp_2017)
+carp_ftest
+
+#Retain null, variances are equal. Run student's t-test
+
+carp_ttest <- t.test(carp_2012, carp_2017, var.equal = TRUE)
+carp_ttest
+
+#p-valye of 0.1819, no significant difference in lobster sizes
+
+#calculate effect size
+
+carp_effsize <- cohen.d(carp_2012, carp_2017)
+carp_effsize
+
+#effect size is negligible (-0.159)
+```
+
+```{r}
+#Site 3: Mohawk Reef - nonMPA
+
+#Make vectors for the 2012 and 2017 values
+
+mohk_2012 <- nonmpa_size_2012 %>% 
+  filter(SITE == "MOHK") %>% 
+  pull(SIZE)
+
+mohk_2017 <- nonmpa_size_2017 %>% 
+  filter(SITE == "MOHK") %>% 
+  pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+
+mohk_ftest <- var.test(mohk_2012, mohk_2017)
+mohk_ftest
+
+#Retain null, variances are equal. Run student's t-test
+
+mohk_ttest <- t.test(mohk_2012, mohk_2017, var.equal = TRUE)
+mohk_ttest
+
+#p-valye < 0.001, significant difference in lobster sizes
+
+#calculate effect size
+
+mohk_effsize <- cohen.d(mohk_2012, mohk_2017)
+mohk_effsize
+
+#effect size is medium (0.54)
+```
+
+```{r}
+#Site 4: Isla Vista - MPA
+
+#Make vectors for the 2012 and 2017 values
+
+iv_2012 <- mpa_size_2012 %>% 
+  filter(SITE == "IVEE") %>% 
+  pull(SIZE)
+
+iv_2017 <- mpa_size_2017 %>% 
+  filter(SITE == "IVEE") %>% 
+  pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+
+iv_ftest <- var.test(iv_2012, iv_2017)
+iv_ftest
+
+#Retain null, variances are equal. Run student's t-test
+
+iv_ttest <- t.test(iv_2012, iv_2017, var.equal = TRUE)
+iv_ttest
+
+#p-valye of 0.0599, no significant difference in lobster sizes
+
+#calculate effect size
+
+iv_effsize <- cohen.d(iv_2012, iv_2017)
+iv_effsize
+
+#effect size is small (-0.377)
+```
+
+```{r}
+#Site 5: Naples Reef - MPA
+
+#Make vectors for the 2012 and 2017 values
+
+napl_2012 <- mpa_size_2012 %>% 
+  filter(SITE == "NAPL") %>% 
+  pull(SIZE)
+
+napl_2017 <- mpa_size_2017 %>% 
+  filter(SITE == "NAPL") %>% 
+  pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+
+napl_ftest <- var.test(napl_2012, napl_2017)
+napl_ftest
+
+#Retain null, variances are equal. Run student's t-test
+
+napl_ttest <- t.test(napl_2012, napl_2017, var.equal = TRUE)
+napl_ttest
+
+#p-valye of 0.5002, no significant difference in lobster sizes
+
+#calculate effect size
+
+napl_effsize <- cohen.d(napl_2012, napl_2017)
+napl_effsize
+
+#effect size is small (-0.283)
+```
+
+```{r}
+#Make boxplots for MPA sites
+
 #Isla Vista
 
-lobster_sizes_iv <- lobster_size_tidy %>% 
-  filter(SITE == "IVEE") %>% 
-  filter(YEAR == "2012" | YEAR == "2017") %>% 
-  select(YEAR, SIZE)
+iv_box <- lobster_size_tidy %>% 
+  filter(SITE == "IVEE", YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE) %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
 
-#Create exploratory histogram and qq plot
+iv_boxplot <- ggplot(iv_box, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
 
-iv_size_hist <- ggplot(lobster_sizes_iv, aes(x = SIZE)) +
-  geom_histogram(bins = 8) +
-  facet_wrap(~YEAR)
+iv_boxplot
 
-iv_size_hist
-  
-iv_size_qq <- ggplot(lobster_sizes_iv, aes(sample = SIZE)) +
-  geom_qq() +
-  facet_wrap(~YEAR)
-
-iv_size_qq
-
-iv_summary <- lobster_sizes_iv %>% 
-  group_by(YEAR) %>% 
-  summarize(mean = mean(SIZE), n = length(SIZE))
-
-iv_summary
-
-#QQ plot for 2012 does not look normal, only have 26 observations so can't use CLT
-```
-
-```{r}
 #Naples
 
-lobster_sizes_napl <- lobster_size_tidy %>% 
-  filter(SITE == "NAPL") %>% 
-  filter(YEAR == "2012" | YEAR == "2017") %>% 
-  select(YEAR, SIZE)
+napl_box <- lobster_size_tidy %>% 
+  filter(SITE == "NAPL", YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE) %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
 
-#Create exploratory histogram and qq plot
+napl_boxplot <- ggplot(napl_box, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
 
-napl_size_hist <- ggplot(lobster_sizes_napl, aes(x = SIZE)) +
-  geom_histogram(bins = 8) +
-  facet_wrap(~YEAR)
-
-napl_size_hist
-  
-napl_size_qq <- ggplot(lobster_sizes_napl, aes(sample = SIZE)) +
-  geom_qq() +
-  facet_wrap(~YEAR)
-
-napl_size_qq
-
-napl_summary <- lobster_sizes_napl %>% 
-  group_by(YEAR) %>% 
-  summarize(mean = mean(SIZE), n = length(SIZE))
-
-napl_summary
+napl_boxplot
 ```
+```{r}
+#Make boxplots for Non-MPA sites
+
+#Arroyo Quemado
+
+aq_box <- lobster_size_tidy %>% 
+  filter(SITE == "AQUE", YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE) %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
+
+aq_boxplot <- ggplot(aq_box, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
+
+aq_boxplot
+
+#Carpinteria
+
+carp_box <- lobster_size_tidy %>% 
+  filter(SITE == "CARP", YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE) %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
+
+carp_boxplot <- ggplot(carp_box, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
+
+carp_boxplot
+
+#Mohawk Reef
+
+mohk_box <- lobster_size_tidy %>% 
+  filter(SITE == "MOHK", YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE) %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
+
+mohk_boxplot <- ggplot(mohk_box, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
+
+mohk_boxplot
+```
+
 
 #Part 4
 
