@@ -225,11 +225,11 @@ size_final
 
 #Part 3 (Bridget)
 
-```{r}
-#These chunks are lumping all the MPV sites together and then comparing 2012 and 2017, and then doing the same thing for non-MPV sites
+##These chunks are lumping all the MPV sites together and then comparing 2012 and 2017, and then doing the same thing for non-MPV sites. If we need to do it site by site, this all needs to be changed
 
 #MPA sites: Isla Vista, Naples Reef
 #Non-MPA sites:Arroyo Quemado, Carpinteria, Mohawk Reef
+```{r}
 
 #For the MPA sites
 
@@ -263,13 +263,29 @@ mpa_2017 <- mpa_size %>%
   filter(YEAR == "2017") %>% 
   pull(SIZE)
 
+#Run an F-test to see which type of t-test we can use
+#H0: ratio of variances is equal to 1
+#HA: ratio of variances is NOT equal to 1
+
+mpa_ftest <- var.test(mpa_2012, mpa_2017)
+mpa_ftest
+
+#Based on result of F-test (p = 0.3346), we retain null hypothesis that variances are equal. We can use a student's t-test, which is more powerful than a Welch's test
+
 #H0 - difference in means is 0
 #HA - difference in means is NOT 0
 
-mpa_ttest <- t.test(mpa_2012, mpa_2017)
+mpa_ttest <- t.test(mpa_2012, mpa_2017, var.equal = TRUE)
 mpa_ttest
 
-#With p-value of 0.036, we reject null hypothesis. There is a significant difference in mean lobster size in MPAs between 2012 and 2017.
+#With p-value of 0.05576, we retain null hypothesis. There is not a significant difference in mean lobster size in MPAs between 2012 and 2017.
+
+#Calculate effect size
+
+mpa_eff_size <- cohen.d(mpa_2012, mpa_2017)
+mpa_eff_size
+
+#There is a small effect size (-0.34)
 ```
 
 ```{r}
@@ -293,5 +309,85 @@ mpa_size_summary <- mpa_size_ordered %>%
 
 mpa_size_summary
 
+```
+
+```{r}
+#For the non-mpa sites
+
+non_mpa_size <- lobster_size_tidy %>% 
+  filter(SITE == "AQUE" | SITE == "MOHK" | SITE == "CARP") %>% 
+  filter(YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE)
+  
+  
+#Need to test for normality to determine which kind of test to run
+
+non_mpa_size_hist <- ggplot(non_mpa_size, aes(x = SIZE)) + 
+  geom_histogram(bins = 8) +
+  facet_wrap(~YEAR, scale = "free")
+  
+non_mpa_size_hist
+
+non_mpa_size_qq <- ggplot (non_mpa_size, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~YEAR)
+
+non_mpa_size_qq
+
+#The data looks normally distributed
+
+non_mpa_2012 <- non_mpa_size %>% 
+  filter(YEAR == "2012") %>% 
+  pull(SIZE)
+
+non_mpa_2017 <- non_mpa_size %>% 
+  filter(YEAR == "2017") %>% 
+  pull(SIZE)
+
+#Run an F-test to see which type of t-test we can use
+#H0: ratio of variances is equal to 1
+#HA: ratio of variances is NOT equal to 1
+
+non_mpa_ftest <- var.test(non_mpa_2012, non_mpa_2017)
+non_mpa_ftest
+
+#Based on result of F-test (p = 0.953), we retain null hypothesis that variances are equal. We can use a student's t-test, which is more powerful than a Welch's test
+
+#H0 - difference in means is 0
+#HA - difference in means is NOT 0
+
+non_mpa_ttest <- t.test(non_mpa_2012, non_mpa_2017, var.equal = TRUE)
+non_mpa_ttest
+
+#With p-value of 0.007, we reject the null hypothesis. There is a significant difference in mean lobster size in non-MPAs between 2012 and 2017.
+
+#Calculate effect size
+
+non_mpa_eff_size <- cohen.d(non_mpa_2012, non_mpa_2017)
+non_mpa_eff_size
+
+#There is a small effect size (0.21)
+```
+
+```{r}
+#Boxplot for Non-MPA
+non_mpa_size_ordered <- non_mpa_size %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
+
+non_mpa_size_boxplot <- ggplot(non_mpa_size_ordered, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
+
+non_mpa_size_boxplot
+
+#Summary table with mean values
+
+non_mpa_size_summary <- non_mpa_size_ordered %>%
+  summarize(
+    size = mean(SIZE),
+    n = length(YEAR)
+  )
+
+non_mpa_size_summary
 ```
 
