@@ -514,7 +514,10 @@ napl_boxplot <- ggplot(napl_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()
 
 napl_boxplot
+
 ```
+
+
 ```{r}
 #Make boxplots for Non-MPA sites
 
