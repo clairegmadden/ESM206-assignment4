@@ -455,3 +455,36 @@ napl_summary
 
 #Part 4
 
+```{r}
+#Make table with counts of legal and illegal lobsters for each site
+
+legal_sizes <- lobster_size_tidy %>% 
+  filter(SITE == "IVEE" | SITE == "NAPL" | SITE == "MOHK" | SITE == "AQUE" | SITE == "CARP") %>% 
+  filter(YEAR == 2017) %>% 
+  filter(SIZE != "-99999") %>% 
+  select(YEAR, SITE, SIZE) %>% 
+  mutate(legality = ifelse(SIZE > 83, "legal", "illegal")) %>% 
+  count(SITE, legality) %>% 
+  spread(legality, n) %>% 
+  select(-SITE)
+
+rownames(legal_sizes) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
+  
+```
+
+```{r}
+#Make table with proportions
+
+legal_prop <- prop.table(as.matrix(legal_sizes), 1)
+
+legal_prop
+```
+
+```{r}
+#Run chi square test on the legalilty table (original data, not prop table)
+
+legal_x2 <- chisq.test(legal_sizes) 
+legal_x2
+
+```
+
