@@ -46,8 +46,56 @@ size_tidy <- lobster_size_tidy %>%
   ) %>% 
   select(-SITE)
 
+traps_tidy <- lobster_traps %>% 
+    mutate(Site=
+    case_when(
+      SITE == "NAPL" ~ "Naples Reef",
+      SITE == "AQUE" ~ "Arroyo Quemado",
+      SITE == "MOHK" ~ "Mohawk Reef",
+      SITE == "IVEE" ~ "Isla Vista",
+      SITE == "CARP" ~ "Carpinteria"
+    )
+  ) %>% 
+  select(-SITE)
+
 
 ```
+
+#Part 1 (Claire)
+```{r}
+
+abundance_summary <- lobster_size %>%
+  group_by(SITE, YEAR) %>% 
+  summarize(
+    count = length(COUNT)
+  )
+
+abundance_column <- ggplot(abundance_summary, aes( x = YEAR, y = count))+
+  geom_col()+
+  facet_wrap(~SITE)
+
+abundance_column
+
+
+traps_simple <- lobster_traps %>% 
+  filter(SITE == "AQUE" | SITE == "NAPL" | SITE == "MOHK" | SITE == "IVEE" | SITE == "CARP")
+
+traps_summary <- traps_simple %>% 
+  group_by(SITE, YEAR) %>% 
+  summarize(
+    traps = length(TRAPS)
+  )
+
+traps_column <- ggplot(traps_summary, aes( x = YEAR, y = traps))+
+  geom_col()+
+  facet_wrap(~SITE)
+
+traps_column
+abundance_column
+
+```
+
+
 
 #Part 2 (Andrew)
 
