@@ -198,7 +198,7 @@ lobster_anova
 carapace_ph <- TukeyHSD(carapace_aov)
 carapace_ph
 
-#Lobster sizes differed significantly between all sites aside from Naples Reef and Isla Vista. Do we want to run Cohen's d here?  It might get very clunky to convey all of the effect sizes, or maybe we could make a table showing all of the differences and effect sizes?
+#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. Do we want to run Cohen's d here?  It might get very clunky to convey all of the effect sizes, or maybe we could make a table showing all of the differences and effect sizes?
 
 ```
 
@@ -220,6 +220,78 @@ size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size (mm)
 
 size_final
   
+
+```
+
+#Part 3 (Bridget)
+
+```{r}
+#These chunks are lumping all the MPV sites together and then comparing 2012 and 2017, and then doing the same thing for non-MPV sites
+
+#MPA sites: Isla Vista, Naples Reef
+#Non-MPA sites:Arroyo Quemado, Carpinteria, Mohawk Reef
+
+#For the MPA sites
+
+mpa_size <- lobster_size_tidy %>% 
+  filter(SITE == "IVEE" | SITE == "NAPL") %>% 
+  filter(YEAR == "2012" | YEAR == "2017") %>% 
+  select(YEAR, SIZE)
+  
+  
+#Need to test for normality to determine which kind of test to run
+
+mpa_size_hist <- ggplot(mpa_size, aes(x = SIZE)) + 
+  geom_histogram(bins = 8) +
+  facet_wrap(~YEAR, scale = "free")
+  
+mpa_size_hist
+
+mpa_size_qq <- ggplot (mpa_size, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~YEAR)
+
+mpa_size_qq
+
+#The data for 2017 looks normally distributed, but the qq plot for 2012 doesn't look linear. We have more than 30 samples for each year though so we can still use a t-test
+
+mpa_2012 <- mpa_size %>% 
+  filter(YEAR == "2012") %>% 
+  pull(SIZE)
+
+mpa_2017 <- mpa_size %>% 
+  filter(YEAR == "2017") %>% 
+  pull(SIZE)
+
+#H0 - difference in means is 0
+#HA - difference in means is NOT 0
+
+mpa_ttest <- t.test(mpa_2012, mpa_2017)
+mpa_ttest
+
+#With p-value of 0.036, we reject null hypothesis. There is a significant difference in mean lobster size in MPAs between 2012 and 2017.
+```
+
+```{r}
+#Boxplot for MPA
+mpa_size_ordered <- mpa_size %>% 
+  mutate(YEAR = factor(YEAR)) %>% 
+  group_by(YEAR)
+
+mpa_size_boxplot <- ggplot(mpa_size_ordered, aes(x = YEAR, y = SIZE)) +
+  geom_boxplot()
+
+mpa_size_boxplot
+
+#Summary table with mean values
+
+mpa_size_summary <- mpa_size_ordered %>%
+  summarize(
+    size = mean(SIZE),
+    n = length(YEAR)
+  )
+
+mpa_size_summary
 
 ```
 
