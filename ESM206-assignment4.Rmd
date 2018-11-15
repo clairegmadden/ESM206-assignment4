@@ -17,6 +17,7 @@ library(RColorBrewer)
 library(dplyr)
 library(car)
 library(effsize)
+library(kableExtra)
 
 ```
 
@@ -162,17 +163,53 @@ carapace_qq
 carapace_levene <- leveneTest(SIZE ~ Site, data = size_2017)
 carapace_levene
 
-#We reject the null hypothesis of equal variances (p < .001).  Thus, we must use the Kruskal-Wallis test, a non-parametric alternative to one-way ANOVA.
+#We reject the null hypothesis of equal variances (p < .001) based on Levene's Test.  However, we can examine the variances of each site to see if the largest is less than four times the smallest variance.  
 
-#H0: All ranks are equal, no difference in median carapace size between locations
-#HA: At least two ranks differ, at least one difference in group medians between locations
+carapace_variances <- size_2017 %>% 
+  group_by(Site) %>% 
+  summarize(
+    Variance = var(SIZE)
+  )
 
-carapace_kwt <- kruskal.test(Site ~ SIZE, data = size_2017)
-carapace_kwt  #not sure if this is the right sequence of variables for this test
+carapace_variances
 
-#We retain the null hypothesis of equal variances (p = .291), and assume no difference in median carapace size between locations.
+#The largest variance is well less than four times the smallest variance, so we can assume accept the null hypothesis of equal variances and run an ANOVA.
 
-#Since there is no difference in medians between locations, we do not need to run Cliff's Delta for effect size, and Tukey's post-hoc test doesn't apply for non-ANOVA testing.
+#H0: Mean carapace sizes are equal at all sites
+#HA: Mean carapace sizes vary for lobsters from at least two sites.
+
+carapace_aov <- aov(SIZE ~ Site, data = size_2017)
+summary(carapace_aov)
+
+#With p = .0085, we reject the null, and assume mean carapace length varies between lobsters from at least two sites. At least two populations were taken from populations with different means.
+
+#Post-hoc testing using Tukey's HSD
+
+carapace_ph <- TukeyHSD(carapace_aov)
+carapace_ph
+
+#Lobster sizes differed significantly between all sites aside from Naples Reef and Isla Vista. Do we want to run Cohen's d here?  It might get very clunky to convey all of the effect sizes, or maybe we could make a table showing all of the differences and effect sizes?
+
+```
+
+**Figure 1: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel** 
+
+```{r}
+
+#Comparing the lobster sizes across the sites, and putting this information in a table.
+
+size_summary <- size_2017 %>% 
+  group_by(Site) %>% 
+  summarize("Mean Size" = round(mean(SIZE), 2),
+            "Sample Size" = length(Site))
+
+size_summary
+
+size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size (mm)", "Sample Size"), align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped"))
+
+size_final
+  
 
 ```
 
