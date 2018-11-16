@@ -195,7 +195,26 @@ lobster_anova
 carapace_ph <- TukeyHSD(carapace_aov)
 carapace_ph
 
-#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. Do we want to run Cohen's d here?  It might get very clunky to convey all of the effect sizes, or maybe we could make a table showing all of the differences and effect sizes?
+#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. 
+
+#Cohen's d in case we want to include it
+
+naples_2017 <- size_2017 %>% 
+  filter(Site == "Naples Reef")
+
+carp_2017 <- size_2017 %>% 
+  filter(Site == "Carpinteria")
+
+iv_2017 <- size_2017 %>% 
+  filter(Site == "Isla Vista")
+
+nap_carp_effsize <- cohen.d(naples_2017$SIZE, carp_2017$SIZE)
+nap_carp_effsize
+
+nap_iv_effsize <- cohen.d(naples_2017$SIZE, iv_2017$SIZE)
+nap_iv_effsize
+
+#Small effect size between both locations
 
 ```
 
