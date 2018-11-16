@@ -287,7 +287,11 @@ nonmpa_2017_qq <- ggplot(nonmpa_size_2017, aes(sample = SIZE)) +
 nonmpa_2017_qq
 ```
 
+<<<<<<< HEAD
 ```{r}
+=======
+```{r, echo = FALSE, message = FALSE}
+>>>>>>> 1e4663e0341adbab43cc0399bf85ab81db0a2074
 #Site 1: Arroyo Quemado - nonMPA
 
 #Make vectors for the 2012 and 2017 values
@@ -321,7 +325,12 @@ aq_effsize
 
 #effect size is small (-0.256)
 ```
+<<<<<<< HEAD
 ```{r}
+=======
+
+```{r, echo = FALSE, message = FALSE}
+>>>>>>> 1e4663e0341adbab43cc0399bf85ab81db0a2074
 #Site 2: Carpinteria - nonMPA
 
 #Make vectors for the 2012 and 2017 values
@@ -356,7 +365,11 @@ carp_effsize
 #effect size is negligible (-0.159)
 ```
 
+<<<<<<< HEAD
 ```{r}
+=======
+```{r, echo = FALSE, message = FALSE}
+>>>>>>> 1e4663e0341adbab43cc0399bf85ab81db0a2074
 #Site 3: Mohawk Reef - nonMPA
 
 #Make vectors for the 2012 and 2017 values
@@ -391,7 +404,11 @@ mohk_effsize
 #effect size is medium (0.54)
 ```
 
+<<<<<<< HEAD
 ```{r}
+=======
+```{r, echo = FALSE, message = FALSE}
+>>>>>>> 1e4663e0341adbab43cc0399bf85ab81db0a2074
 #Site 4: Isla Vista - MPA
 
 #Make vectors for the 2012 and 2017 values
@@ -426,7 +443,11 @@ iv_effsize
 #effect size is small (-0.377)
 ```
 
+<<<<<<< HEAD
 ```{r}
+=======
+```{r, echo = FALSE, message = FALSE}
+>>>>>>> 1e4663e0341adbab43cc0399bf85ab81db0a2074
 #Site 5: Naples Reef - MPA
 
 #Make vectors for the 2012 and 2017 values
@@ -461,7 +482,11 @@ napl_effsize
 #effect size is small (-0.283)
 ```
 
+<<<<<<< HEAD
 ```{r}
+=======
+```{r, echo = FALSE,}
+>>>>>>> 1e4663e0341adbab43cc0399bf85ab81db0a2074
 #Make boxplots for MPA sites
 
 #Isla Vista
