@@ -19,6 +19,7 @@ library(dplyr)
 library(car)
 library(effsize)
 library(kableExtra)
+library(ggrepel)
 
 ```
 
@@ -71,12 +72,6 @@ abundance_summary <- lobster_size %>%
   summarize(
     count = sum(COUNT))
 
-abundance_column <- ggplot(abundance_summary, aes( x = YEAR, y = count))+
-  geom_col()+
-  facet_wrap(~SITE)
-
-abundance_column
-
 
 traps_simple <- lobster_traps %>% 
   filter(SITE == "AQUE" | SITE == "NAPL" | SITE == "MOHK" | SITE == "IVEE" | SITE == "CARP")
@@ -86,26 +81,6 @@ traps_summary <- traps_simple %>%
   summarize(
     traps = sum(TRAPS))
 
-traps_column <- ggplot(traps_summary, aes( x = YEAR, y = traps))+
-  geom_col()+
-  facet_wrap(~SITE)
-
-traps_column
-
-
-abundance_scatter <- ggplot(abundance_summary, aes(x = YEAR, y = count))+
-  geom_point()+
-  geom_line()+
-  facet_wrap(~SITE)
-
-abundance_scatter
-
-traps_scatter <- ggplot(traps_summary, aes(x = YEAR, y = traps))+
-  geom_point()+
-  geom_line()+
-  facet_wrap(~SITE)
-
-traps_scatter
 
 ```
 
@@ -122,11 +97,29 @@ both_scatter <- ggplot(abundance_traps, aes(x = YEAR))+
   theme_light()+
   scale_x_continuous(expand = c(0,0))+
   labs( x = "Year",
-        y = "Lobsters/Traps")
+        y = "Count")
+  
 
 both_scatter
 
 
+
+
+```
+```{r}
+
+traps_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = traps))+
+  geom_point(aes(color = SITE))+
+  geom_line(aes(color = SITE))+
+  theme_classic()
+traps_scatter
+
+count_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = count))+
+  geom_point(aes(color = SITE))+
+  geom_line(aes(color = SITE))+
+  theme_classic()
+
+count_scatter
 
 
 ```
@@ -202,7 +195,26 @@ lobster_anova
 carapace_ph <- TukeyHSD(carapace_aov)
 carapace_ph
 
-#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. Do we want to run Cohen's d here?  It might get very clunky to convey all of the effect sizes, or maybe we could make a table showing all of the differences and effect sizes?
+#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. 
+
+#Cohen's d in case we want to include it
+
+naples_2017 <- size_2017 %>% 
+  filter(Site == "Naples Reef")
+
+carp_2017 <- size_2017 %>% 
+  filter(Site == "Carpinteria")
+
+iv_2017 <- size_2017 %>% 
+  filter(Site == "Isla Vista")
+
+nap_carp_effsize <- cohen.d(naples_2017$SIZE, carp_2017$SIZE)
+nap_carp_effsize
+
+nap_iv_effsize <- cohen.d(naples_2017$SIZE, iv_2017$SIZE)
+nap_iv_effsize
+
+#Small effect size between both locations
 
 ```
 
@@ -231,8 +243,9 @@ size_final
 
 #The following chunks are comparing 2012 and 2017 for each site individually 
 
-```{r, echo = FALSE}
+```{r}
 #MPA Sites data frames
+
 mpa_size_2012 <- lobster_size_tidy %>% 
   filter(SITE == "IVEE" | SITE == "NAPL", YEAR == "2012") %>% 
   select(YEAR, SITE, SIZE)
@@ -243,7 +256,7 @@ mpa_size_2017 <- lobster_size_tidy %>%
 
 ```
 
-```{r, include = FALSE}
+```{r}
 #MPA Sites exploratory histograms and qq plots
 
 mpa_2012_hist <- ggplot(mpa_size_2012, aes(x = SIZE)) + 
@@ -271,7 +284,7 @@ mpa_2017_qq <- ggplot(mpa_size_2017, aes(sample = SIZE)) +
 mpa_2017_qq
 ```
 
-```{r, echo = FALSE}
+```{r}
 #NonMPA sites data frames
 
 nonmpa_size_2012 <- lobster_size_tidy %>% 
@@ -283,7 +296,7 @@ nonmpa_size_2017 <- lobster_size_tidy %>%
   select(YEAR, SITE, SIZE)
 ```
 
-```{r, include = FALSE}
+```{r}
 #NonMPA Sites exploratory histograms and qq plots
 
 nonmpa_2012_hist <- ggplot(nonmpa_size_2012, aes(x = SIZE)) + 
@@ -311,112 +324,11 @@ nonmpa_2017_qq <- ggplot(nonmpa_size_2017, aes(sample = SIZE)) +
 nonmpa_2017_qq
 ```
 
-```{r, echo = FALSE, message = FALSE}
-#Site 1: Arroyo Quemado - nonMPA
 
-#Make vectors for the 2012 and 2017 values
 
-aq_2012 <- nonmpa_size_2012 %>% 
-  filter(SITE == "AQUE") %>% 
-  pull(SIZE)
 
-aq_2017 <- nonmpa_size_2017 %>% 
-  filter(SITE == "AQUE") %>% 
-  pull(SIZE)
+```{r}
 
-#Run an F-test for equal variance
-#H0: ratio of variances = 1
-#HA: ratio of variances NOT = 1
-
-aq_ftest <- var.test(aq_2012, aq_2017)
-aq_ftest
-
-#Retain null, variances are equal. Run student's t-test
-
-aq_ttest <- t.test(aq_2012, aq_2017, var.equal = TRUE)
-aq_ttest
-
-#p-valye of 0.2097, no significant difference in lobster sizes
-
-#calculate effect size
-
-aq_effsize <- cohen.d(aq_2012, aq_2017)
-aq_effsize
-
-#effect size is small (-0.256)
-```
-
-```{r, echo = FALSE, message = FALSE}
-#Site 2: Carpinteria - nonMPA
-
-#Make vectors for the 2012 and 2017 values
-
-carp_2012 <- nonmpa_size_2012 %>% 
-  filter(SITE == "CARP") %>% 
-  pull(SIZE)
-
-carp_2017 <- nonmpa_size_2017 %>% 
-  filter(SITE == "CARP") %>% 
-  pull(SIZE)
-
-#Run an F-test for equal variance
-#H0: ratio of variances = 1
-#HA: ratio of variances NOT = 1
-
-carp_ftest <- var.test(carp_2012, carp_2017)
-carp_ftest
-
-#Retain null, variances are equal. Run student's t-test
-
-carp_ttest <- t.test(carp_2012, carp_2017, var.equal = TRUE)
-carp_ttest
-
-#p-valye of 0.1819, no significant difference in lobster sizes
-
-#calculate effect size
-
-carp_effsize <- cohen.d(carp_2012, carp_2017)
-carp_effsize
-
-#effect size is negligible (-0.159)
-```
-
-```{r, echo = FALSE, message = FALSE}
-#Site 3: Mohawk Reef - nonMPA
-
-#Make vectors for the 2012 and 2017 values
-
-mohk_2012 <- nonmpa_size_2012 %>% 
-  filter(SITE == "MOHK") %>% 
-  pull(SIZE)
-
-mohk_2017 <- nonmpa_size_2017 %>% 
-  filter(SITE == "MOHK") %>% 
-  pull(SIZE)
-
-#Run an F-test for equal variance
-#H0: ratio of variances = 1
-#HA: ratio of variances NOT = 1
-
-mohk_ftest <- var.test(mohk_2012, mohk_2017)
-mohk_ftest
-
-#Retain null, variances are equal. Run student's t-test
-
-mohk_ttest <- t.test(mohk_2012, mohk_2017, var.equal = TRUE)
-mohk_ttest
-
-#p-valye < 0.001, significant difference in lobster sizes
-
-#calculate effect size
-
-mohk_effsize <- cohen.d(mohk_2012, mohk_2017)
-mohk_effsize
-
-#effect size is medium (0.54)
-```
-
-```{r, echo = FALSE, message = FALSE}
 #Site 4: Isla Vista - MPA
 
 #Make vectors for the 2012 and 2017 values
@@ -451,7 +363,9 @@ iv_effsize
 #effect size is small (-0.377)
 ```
 
-```{r, echo = FALSE, message = FALSE}
+
+```{r}
+
 #Site 5: Naples Reef - MPA
 
 #Make vectors for the 2012 and 2017 values
@@ -486,7 +400,9 @@ napl_effsize
 #effect size is small (-0.283)
 ```
 
-```{r, echo = FALSE,}
+
+```{r}
+
 #Make boxplots for MPA sites
 
 #Isla Vista
@@ -519,7 +435,7 @@ napl_boxplot
 ```
 
 
-```{r, echo = FALSE}
+```{r}
 #Make boxplots for Non-MPA sites
 
 #Arroyo Quemado
@@ -565,7 +481,7 @@ mohk_boxplot
 
 #Part 4
 
-```{r, echo = FALSE}
+```{r}
 #Make table with counts of legal and illegal lobsters for each site
 
 legal_sizes <- lobster_size_tidy %>% 
@@ -573,7 +489,7 @@ legal_sizes <- lobster_size_tidy %>%
   filter(YEAR == 2017) %>% 
   filter(SIZE != "-99999") %>% 
   select(YEAR, SITE, SIZE) %>% 
-  mutate(legality = ifelse(SIZE > 82, "legal", "illegal")) %>% 
+  mutate(legality = ifelse(SIZE > 83, "legal", "illegal")) %>% 
   count(SITE, legality) %>% 
   spread(legality, n) %>% 
   select(-SITE)
@@ -582,7 +498,7 @@ rownames(legal_sizes) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
   
 ```
 
-```{r, echo = FALSE}
+```{r}
 #Make table with proportions
 
 legal_prop <- prop.table(as.matrix(legal_sizes), 1)
@@ -590,7 +506,7 @@ legal_prop <- prop.table(as.matrix(legal_sizes), 1)
 legal_prop
 ```
 
-```{r, echo = FALSE}
+```{r}
 #Run chi square test on the legalilty table (original data, not prop table)
 
 legal_x2 <- chisq.test(legal_sizes) 
