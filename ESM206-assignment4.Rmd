@@ -511,7 +511,8 @@ napl_box <- lobster_size_tidy %>%
   group_by(YEAR)
 
 napl_boxplot <- ggplot(napl_box, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
+  geom_boxplot()+
+  theme_classic()
 
 napl_boxplot
 
