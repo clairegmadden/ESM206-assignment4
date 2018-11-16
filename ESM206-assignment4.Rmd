@@ -19,6 +19,7 @@ library(dplyr)
 library(car)
 library(effsize)
 library(kableExtra)
+library(ggrepel)
 
 ```
 
@@ -96,12 +97,30 @@ both_scatter <- ggplot(abundance_traps, aes(x = YEAR))+
   theme_light()+
   scale_x_continuous(expand = c(0,0))+
   labs( x = "Year",
-        y = "Count")+
+        y = "Count")
   
 
 both_scatter
 
 
+
+
+```
+```{r}
+
+traps_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = traps))+
+  geom_point(aes(color = SITE))+
+  geom_line(aes(color = SITE))+
+  theme_classic()
+
+traps_scatter
+
+count_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = count))+
+  geom_point(aes(color = SITE))+
+  geom_line(aes(color = SITE))+
+  theme_classic()
+
+count_scatter
 
 
 ```
