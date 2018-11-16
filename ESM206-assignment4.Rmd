@@ -31,7 +31,7 @@ lobster_traps <- read_csv("lobster_traps.csv")
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 
 lobster_size2 <- as.data.frame(lobster_size)
 lobster_size_tidy <- expand.dft(lobster_size2, freq = "COUNT")
@@ -65,7 +65,7 @@ traps_tidy <- lobster_traps %>%
 ```
 
 #Part 1 (Claire)
-```{r}
+```{r, echo=FALSE}
 
 abundance_summary <- lobster_size %>%
   group_by(SITE, YEAR) %>% 
@@ -84,7 +84,7 @@ traps_summary <- traps_simple %>%
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 # my attempt at joining the data before graphing and or getting both graphs for one location on the same plane
 
 abundance_traps <- full_join(abundance_summary, traps_summary)
@@ -127,7 +127,7 @@ count_scatter
 
 #Part 2 (Andrew)
 
-```{r}
+```{r, echo=FALSE, include= FALSE}
 
 #Filter for just 2017 results for Part 2, and Exploratory Histogram and QQ Plots
 
@@ -151,7 +151,7 @@ carapace_qq
 
 ```
 
-```{r}
+```{r echo=FALSE, message=FALSE, include=FALSE}
 
 #Levene's Test for Equal Variances, since we have more than two groups
 #H0: Variances are equal
@@ -220,7 +220,7 @@ nap_iv_effsize
 
 **Figure 1: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel** 
 
-```{r}
+```{r, echo=FALSE, message=FALSE, include=FALSE}
 
 #Comparing the lobster sizes across the sites, and putting this information in a table.
 
@@ -233,17 +233,24 @@ size_summary
 
 size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size (mm)", "Sample Size"), align = "c") %>% 
   kable_styling(bootstrap_options = c("striped"))
+  
+size_final
+```
+
+```{r, echo=FALSE}
+
+size_summary
 
 size_final
-  
 
 ```
+
 
 #Part 3 (Bridget)
 
 #The following chunks are comparing 2012 and 2017 for each site individually 
 
-```{r}
+```{r, echo=FALSE}
 #MPA Sites data frames
 
 mpa_size_2012 <- lobster_size_tidy %>% 
@@ -256,7 +263,7 @@ mpa_size_2017 <- lobster_size_tidy %>%
 
 ```
 
-```{r}
+```{r, echo=FALSE}
 #MPA Sites exploratory histograms and qq plots
 
 mpa_2012_hist <- ggplot(mpa_size_2012, aes(x = SIZE)) + 
@@ -284,7 +291,7 @@ mpa_2017_qq <- ggplot(mpa_size_2017, aes(sample = SIZE)) +
 mpa_2017_qq
 ```
 
-```{r}
+```{r, echo=FALSE}
 #NonMPA sites data frames
 
 nonmpa_size_2012 <- lobster_size_tidy %>% 
@@ -296,7 +303,7 @@ nonmpa_size_2017 <- lobster_size_tidy %>%
   select(YEAR, SITE, SIZE)
 ```
 
-```{r}
+```{r, echo=FALSE}
 #NonMPA Sites exploratory histograms and qq plots
 
 nonmpa_2012_hist <- ggplot(nonmpa_size_2012, aes(x = SIZE)) + 
@@ -324,7 +331,7 @@ nonmpa_2017_qq <- ggplot(nonmpa_size_2017, aes(sample = SIZE)) +
 nonmpa_2017_qq
 ```
 
-```{r}
+```{r, echo=FALSE}
 #Site 1: Arroyo Quemado - nonMPA
 #Make vectors for the 2012 and 2017 values
  
@@ -369,7 +376,7 @@ aq_mwu
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 #Site 2: Carpinteria - nonMPA
 #Make vectors for the 2012 and 2017 values
  
@@ -404,7 +411,7 @@ carp_effsize
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 #Site 3: Mohawk Reef - nonMPA
 
 #Make vectors for the 2012 and 2017 values
@@ -440,7 +447,7 @@ mohk_effsize
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 
 #Site 4: Isla Vista - MPA
 
@@ -487,7 +494,7 @@ iv_mwu
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 
 #Site 5: Naples Reef - MPA
 
@@ -524,7 +531,7 @@ napl_effsize
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 
 #Make boxplots for MPA sites
 
@@ -558,7 +565,7 @@ napl_boxplot
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 #Make boxplots for Non-MPA sites
 
 #Arroyo Quemado
@@ -604,7 +611,7 @@ mohk_boxplot
 
 #Part 4
 
-```{r}
+```{r, echo=FALSE}
 #Make table with counts of legal and illegal lobsters for each site
 
 legal_sizes <- lobster_size_tidy %>% 
@@ -621,7 +628,7 @@ rownames(legal_sizes) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
   
 ```
 
-```{r}
+```{r, echo=FALSE}
 #Make table with proportions
 
 legal_prop <- prop.table(as.matrix(legal_sizes), 1)
@@ -629,7 +636,7 @@ legal_prop <- prop.table(as.matrix(legal_sizes), 1)
 legal_prop
 ```
 
-```{r}
+```{r, echo=FALSE}
 #Run chi square test on the legalilty table (original data, not prop table)
 
 legal_x2 <- chisq.test(legal_sizes) 
