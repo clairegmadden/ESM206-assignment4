@@ -324,7 +324,120 @@ nonmpa_2017_qq <- ggplot(nonmpa_size_2017, aes(sample = SIZE)) +
 nonmpa_2017_qq
 ```
 
+```{r}
+#Site 1: Arroyo Quemado - nonMPA
+#Make vectors for the 2012 and 2017 values
+ 
+aq_2012 <- nonmpa_size_2012 %>% 
+ filter(SITE == "AQUE") %>% 
+ pull(SIZE)
+ 
+aq_2017 <- nonmpa_size_2017 %>% 
+ filter(SITE == "AQUE") %>% 
+ pull(SIZE)
+ 
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+ 
+aq_ftest <- var.test(aq_2012, aq_2017)
+aq_ftest
+ 
+#Retain null, variances are equal. Run student's t-test
+ 
+aq_ttest <- t.test(aq_2012, aq_2017, var.equal = TRUE)
+aq_ttest
+ 
+#p-valye of 0.2097, no significant difference in lobster sizes
+ 
+#calculate effect size
+ 
+aq_effsize <- cohen.d(aq_2012, aq_2017)
+aq_effsize
 
+#effect size is small (-0.256)
+
+#Run a MWU test - 2012 data doesn't look totally normal
+
+# H0: There is not a signficant difference in ranks for 2012 and 2017
+# HA: There is a significant difference in ranks
+
+aq_mwu <- wilcox.test(aq_2012, aq_2017)
+aq_mwu
+
+#Retain the null, there is not a significant difference in ranks. p = 0.1618
+```
+
+
+```{r}
+#Site 2: Carpinteria - nonMPA
+#Make vectors for the 2012 and 2017 values
+ 
+carp_2012 <- nonmpa_size_2012 %>% 
+ filter(SITE == "CARP") %>% 
+ pull(SIZE)
+ 
+carp_2017 <- nonmpa_size_2017 %>% 
+ filter(SITE == "CARP") %>% 
+ pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+ 
+carp_ftest <- var.test(carp_2012, carp_2017)
+carp_ftest
+ 
+#Retain null, variances are equal. Run student's t-test
+ 
+carp_ttest <- t.test(carp_2012, carp_2017, var.equal = TRUE)
+carp_ttest
+ 
+#p-valye of 0.1819, no significant difference in lobster sizes
+ 
+#calculate effect size
+ 
+carp_effsize <- cohen.d(carp_2012, carp_2017)
+carp_effsize
+ 
+#effect size is negligible (-0.159)
+```
+
+
+```{r}
+#Site 3: Mohawk Reef - nonMPA
+
+#Make vectors for the 2012 and 2017 values
+
+mohk_2012 <- nonmpa_size_2012 %>% 
+ filter(SITE == "MOHK") %>% 
+ pull(SIZE)
+ 
+mohk_2017 <- nonmpa_size_2017 %>% 
+ filter(SITE == "MOHK") %>% 
+ pull(SIZE)
+
+#Run an F-test for equal variance
+#H0: ratio of variances = 1
+#HA: ratio of variances NOT = 1
+ 
+mohk_ftest <- var.test(mohk_2012, mohk_2017)
+mohk_ftest
+ 
+#Retain null, variances are equal. Run student's t-test
+ 
+mohk_ttest <- t.test(mohk_2012, mohk_2017, var.equal = TRUE)
+mohk_ttest
+ 
+#p-valye < 0.001, significant difference in lobster sizes
+ 
+#calculate effect size
+ 
+mohk_effsize <- cohen.d(mohk_2012, mohk_2017)
+mohk_effsize
+ 
+#effect size is medium (0.54)
+```
 
 
 ```{r}
@@ -361,6 +474,16 @@ iv_effsize <- cohen.d(iv_2012, iv_2017)
 iv_effsize
 
 #effect size is small (-0.377)
+
+#Run a MWU test - 2012 data doesn't look totally normal
+
+# H0: There is not a signficant difference in ranks for 2012 and 2017
+# HA: There is a significant difference in ranks
+
+iv_mwu <- wilcox.test(iv_2012, iv_2017)
+iv_mwu
+
+#Reject the null, there is a significant difference in ranks. p = 0.008488
 ```
 
 
@@ -511,6 +634,8 @@ legal_prop
 
 legal_x2 <- chisq.test(legal_sizes) 
 legal_x2
+
+#There is a significant association between site location and the amount of legal/illegal lobsters
 
 ```
 
