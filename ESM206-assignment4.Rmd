@@ -188,6 +188,27 @@ lobster_anova <- ggplot(size_2017, aes(x = Site, y = SIZE))+
 
 lobster_anova
 
+#Making a summary table and column graph for lobster sizes
+
+size_summary <- size_2017 %>% 
+  group_by(Site) %>%
+  summarize(
+    'Median' = round(median(SIZE), 2),
+    'Maximum' = round(max(SIZE), 2),
+    'Mean' = round(mean(SIZE), 2),
+    'Standard_Deviation' = round(sd(SIZE), 2),
+    'Sample_Size' = length(SIZE)
+  )
+
+size_2017_col <- ggplot(size_summary, aes(x = Site, y = Mean))+
+  geom_col(fill = "indianred2")+
+  geom_errorbar(aes(ymin=Mean-Standard_Deviation, ymax=Mean+Standard_Deviation), size = .3, width = .2)+
+  theme_classic()+
+  labs(x = "Site", y = "Carapace Size")+
+  scale_y_continuous(breaks=seq(0,100, by = 20), expand = c(0,0), limits = c(0,100))
+                
+size_2017_col
+
 #With p = .0085, we reject the null, and assume mean carapace length varies between lobsters from at least two sites. At least two populations were taken from populations with different means.
 
 #Post-hoc testing using Tukey's HSD
@@ -218,7 +239,7 @@ nap_iv_effsize
 
 ```
 
-**Figure 1: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel** 
+**Figure 1: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel in 2017** 
 
 ```{r, echo=FALSE, message=FALSE, include=FALSE}
 
