@@ -111,13 +111,15 @@ both_scatter
 traps_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = traps))+
   geom_point(aes(color = SITE))+
   geom_line(aes(color = SITE))+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Year", y= "Traps")
 traps_scatter
 
 count_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = count))+
   geom_point(aes(color = SITE))+
   geom_line(aes(color = SITE))+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Year", y = "Lobsters Counted")
 
 count_scatter
 
@@ -284,7 +286,7 @@ mpa_size_2017 <- lobster_size_tidy %>%
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #MPA Sites exploratory histograms and qq plots
 
 mpa_2012_hist <- ggplot(mpa_size_2012, aes(x = SIZE)) + 
@@ -324,7 +326,7 @@ nonmpa_size_2017 <- lobster_size_tidy %>%
   select(YEAR, SITE, SIZE)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #NonMPA Sites exploratory histograms and qq plots
 
 nonmpa_2012_hist <- ggplot(nonmpa_size_2012, aes(x = SIZE)) + 
@@ -352,7 +354,7 @@ nonmpa_2017_qq <- ggplot(nonmpa_size_2017, aes(sample = SIZE)) +
 nonmpa_2017_qq
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #Site 1: Arroyo Quemado - nonMPA
 #Make vectors for the 2012 and 2017 values
  
@@ -397,7 +399,7 @@ aq_mwu
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #Site 2: Carpinteria - nonMPA
 #Make vectors for the 2012 and 2017 values
  
@@ -432,7 +434,7 @@ carp_effsize
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #Site 3: Mohawk Reef - nonMPA
 
 #Make vectors for the 2012 and 2017 values
@@ -468,7 +470,7 @@ mohk_effsize
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 
 #Site 4: Isla Vista - MPA
 
@@ -515,7 +517,7 @@ iv_mwu
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 
 #Site 5: Naples Reef - MPA
 
@@ -552,7 +554,7 @@ napl_effsize
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 
 #Make boxplots for MPA sites
 
@@ -632,7 +634,7 @@ mohk_boxplot
 
 #Part 4
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 #Make table with counts of legal and illegal lobsters for each site
 
 legal_sizes <- lobster_size_tidy %>% 
@@ -649,7 +651,7 @@ rownames(legal_sizes) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
   
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #Make table with proportions
 
 legal_prop <- prop.table(as.matrix(legal_sizes), 1)
@@ -657,7 +659,7 @@ legal_prop <- prop.table(as.matrix(legal_sizes), 1)
 legal_prop
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #Run chi square test on the legalilty table (original data, not prop table)
 
 legal_x2 <- chisq.test(legal_sizes) 
