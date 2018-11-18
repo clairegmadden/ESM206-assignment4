@@ -187,6 +187,7 @@ lobster_anova <- ggplot(size_2017, aes(x = Site, y = SIZE))+
   ylab("Carapace Size (mm)")+
   xlab("Site")+
   theme_classic()
+##Improve color scheme here?
 
 #Making a summary table and column graph for lobster sizes
 
@@ -216,7 +217,7 @@ carapace_ph
 
 #Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. 
 
-#Cohen's d in case we want to include it
+#Cohen's d
 
 naples_2017 <- size_2017 %>% 
   filter(Site == "Naples Reef")
