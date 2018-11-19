@@ -106,7 +106,7 @@ both_scatter
 
 
 ```
-```{r}
+```{r, echo = FALSE}
 
 traps_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = traps))+
   geom_point(aes(color = SITE))+
@@ -123,6 +123,17 @@ count_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = count))+
 
 count_scatter
 
+
+```
+
+**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks.
+
+```{r, echo=FALSE}
+#Display Graphs
+
+traps_scatter
+
+count_scatter
 
 ```
 
@@ -561,7 +572,7 @@ napl_effsize
 #effect size is small (-0.283)
 ```
 
-**Figures 4-5: Lobster Carapace Sizes at sites inside Marine Protected Areas in 2012 and 2017** Caption
+**Figures 4-5: Lobster Carapace Sizes at sites inside Marine Protected Areas (2012 and 2017)** Lobster carapace (mm) data collected at two Long-Term Ecological Research sites within Marine Protected Areas in the Santa Barbara Channel: Isla Vista (n=26 in 2012, n=606 in 2017) and Naples Reef (n=6 in 2012, n=112 in 2017). Mean lobster size only differed significantly between 2012 and 2017 at Isla Vista; pairwise comparison at Naples Reef yielded no significant difference (IN LINE REFERENCING).
 
 ```{r, echo=FALSE}
 
@@ -601,7 +612,7 @@ napl_boxplot
 
 ```
 
-**Figures 6-8: Lobster Carapace Sizes at sites outside of Marine Protected Areas in 2012 and 2017** Caption
+**Figures 6-8: Lobster Carapace Sizes at sites outside of Marine Protected Areas in 2012 and 2017** Lobster carapace (mm) data collected at three Long-Term Ecological Research sites outside of Marine Protected Areas in the Santa Barbara Channel: Arroyo Quemado, (n = 38 in 2012, n = 68 in 2017), Carpinteria (n = 78 in 2012, n = 705 in 2017), and Mohawk Reef (n = 83 in 2012, n = 178 in 2017). Mean lobster size only differed significantly between 2012 and 2017 at Mohawk Reef; pairwise comparison at all other sites yielded no significant difference (IN LINE REFERENCING). ADD CORRESPONDING NUMBERS TO EACH GRAPH TITLE.
 
 ```{r, echo=FALSE}
 #Make boxplots for Non-MPA sites
