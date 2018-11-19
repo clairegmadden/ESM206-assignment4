@@ -64,7 +64,7 @@ traps_tidy <- lobster_traps %>%
 
 ```
 
-
+#Part 1
 ```{r, echo=FALSE}
 
 abundance_summary <- lobster_size %>%
@@ -111,6 +111,8 @@ traps_scatter
 
 ```
 
+**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+
 
 
 ```{r, echo = FALSE}
@@ -123,7 +125,7 @@ count_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = count))+
 count_scatter
 ```
 
-**Figure 1: Lobster Abundance at Five Locations in the Santa Barbara Channel (2012-2017)** Total number of lobsters counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs each year from 2012 to 2017.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+
 
 
 
@@ -134,9 +136,169 @@ traps_scatter
 
 
 ```
-**Figure 2: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs. Lobster trap bouy counts at Isla Vista and Naples marine protected areas are both zero in all years between 2012 - 2017, even though only Naples Reef is displayed on this figure. Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^4$.
+**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs. Lobster trap bouy counts at Isla Vista and Naples marine protected areas are both zero across between 2012 - 2017. Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+
+```{r, echo = FALSE}
+
+count_scatter
+
+```
+**Figure 2: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of lobsters counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
 
 
+#Part 2 (Andrew)
+
+```{r, echo=FALSE, include= FALSE}
+
+#Filter for just 2017 results for Part 2, and Exploratory Histogram and QQ Plots
+
+size_2017 <- size_tidy %>% 
+  filter(YEAR == "2017") %>%
+  select(SIZE, Site)
+
+carapace_hist <- ggplot(size_2017, aes(x = SIZE))+
+  geom_histogram(bins = 23, aes(fill = Site))+
+  facet_wrap(~Site)
+
+carapace_hist
+
+carapace_qq <- ggplot(size_2017, aes(sample = SIZE))+
+  geom_qq()+
+  facet_wrap(~Site)
+
+carapace_qq
+
+#The data looks roughly normally distributed, and all sites have a sample size of greater than 30. 
+
+```
+
+```{r echo=FALSE, message=FALSE, include=FALSE}
+
+#Levene's Test for Equal Variances, since we have more than two groups
+#H0: Variances are equal
+#HA: Variances are not equal
+
+carapace_levene <- leveneTest(SIZE ~ Site, data = size_2017)
+carapace_levene
+
+#We reject the null hypothesis of equal variances (p < .001) based on Levene's Test.  However, we can examine the variances of each site to see if the largest is less than four times the smallest variance.  
+
+carapace_variances <- size_2017 %>% 
+  group_by(Site) %>% 
+  summarize(
+    Variance = var(SIZE)
+  )
+
+carapace_variances
+
+#The largest variance is well less than four times the smallest variance, so we can assume accept the null hypothesis of equal variances and run an ANOVA.
+
+#H0: Mean carapace sizes are equal at all sites
+#HA: Mean carapace sizes vary for lobsters from at least two sites.
+
+carapace_aov <- aov(SIZE ~ Site, data = size_2017)
+summary(carapace_aov)
+
+#boxplot for sizes in case we want to include this
+size_2017_boxplot <- ggplot(size_2017, aes(x = Site, y = SIZE))+
+  geom_boxplot()+
+  scale_x_discrete()+
+  ylab("Carapace Size (mm)")+
+  xlab("Site")+
+  theme_classic()+
+  geom_jitter(width = .2, alpha = .4, aes(color = Site))+
+  theme(legend.position = "none")
+##Improve color scheme here?
+
+#Making a summary table and column graph for lobster sizes
+
+size_summary <- size_2017 %>% 
+  group_by(Site) %>%
+  summarize(
+    'Median' = round(median(SIZE), 2),
+    'Maximum' = round(max(SIZE), 2),
+    'Mean' = round(mean(SIZE), 2),
+    'Standard_Deviation' = round(sd(SIZE), 2),
+    'Sample_Size' = length(SIZE)
+  )
+
+size_2017_col <- ggplot(size_summary, aes(x = Site, y = Mean))+
+  geom_col(fill = "indianred2")+
+  geom_errorbar(aes(ymin=Mean-Standard_Deviation, ymax=Mean+Standard_Deviation), size = .3, width = .2)+
+  theme_classic()+
+  labs(x = "Site", y = "Carapace Size (mm)")+
+  scale_y_continuous(breaks=seq(0,100, by = 20), expand = c(0,0), limits = c(0,100))
+
+#With p = .0085, we reject the null, and assume mean carapace length varies between lobsters from at least two sites. At least two populations were taken from populations with different means.
+
+#Post-hoc testing using Tukey's HSD
+
+carapace_ph <- TukeyHSD(carapace_aov)
+carapace_ph
+
+#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. 
+
+#Cohen's d
+
+naples_2017 <- size_2017 %>% 
+  filter(Site == "Naples Reef")
+
+carp_2017 <- size_2017 %>% 
+  filter(Site == "Carpinteria")
+
+iv_2017 <- size_2017 %>% 
+  filter(Site == "Isla Vista")
+
+nap_carp_effsize <- cohen.d(naples_2017$SIZE, carp_2017$SIZE)
+nap_carp_effsize
+
+nap_iv_effsize <- cohen.d(naples_2017$SIZE, iv_2017$SIZE)
+nap_iv_effsize
+
+#Small effect size between both locations
+
+```
+
+```{r}
+
+size_2017_col
+
+size_2017_boxplot
+
+```
+
+
+**Figure 1: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel in 2017** 
+
+```{r, echo=FALSE, message=FALSE, include=FALSE}
+
+#Comparing the lobster sizes across the sites, and putting this information in a table.
+
+size_summary <- size_2017 %>% 
+  group_by(Site) %>% 
+  summarize("Mean Size" = round(mean(SIZE), 2),
+            "Sample Size" = length(Site))
+
+size_summary
+
+size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size (mm)", "Sample Size"), align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped"))
+  
+size_final
+```
+
+```{r, echo=FALSE}
+
+size_summary
+
+size_final
+
+```
+
+
+#Part 3 (Bridget)
+
+#The following chunks are comparing 2012 and 2017 for each site individually 
 
 ```{r, echo=FALSE}
 #MPA Sites data frames
@@ -400,7 +562,7 @@ napl_effsize
 #effect size is small (-0.283)
 ```
 
-**Figures 3-4: Lobster Carapace Sizes at sites inside Marine Protected Areas (2012 and 2017)** Lobster carapace (mm) data collected at two Long-Term Ecological Research sites within Marine Protected Areas in the Santa Barbara Channel: Isla Vista (n=26 in 2012, n=606 in 2017) and Naples Reef (n=6 in 2012, n=112 in 2017). Mean lobster size only differed significantly between 2012 and 2017 at Isla Vista; pairwise comparison at Naples Reef yielded no significant difference (IN LINE REFERENCING).
+**Figures 4-5: Lobster Carapace Sizes at sites inside Marine Protected Areas (2012 and 2017)** Lobster carapace (mm) data collected at two Long-Term Ecological Research sites within Marine Protected Areas in the Santa Barbara Channel: Isla Vista (n=26 in 2012, n=606 in 2017) and Naples Reef (n=6 in 2012, n=112 in 2017). Mean lobster size only differed significantly between 2012 and 2017 at Isla Vista; pairwise comparison at Naples Reef yielded no significant difference (IN LINE REFERENCING).
 
 ```{r, echo=FALSE}
 
@@ -419,7 +581,7 @@ iv_boxplot <- ggplot(iv_box, aes(x = YEAR, y = SIZE)) +
   theme_classic()+
   geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 3: Isla Vista")+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 4: Isla Vista")+
   theme(legend.position = "none")
 
 iv_boxplot
@@ -437,7 +599,7 @@ napl_boxplot <- ggplot(napl_box, aes(x = YEAR, y = SIZE)) +
   theme_classic()+
   geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 4: Naples Reef")+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 5: Naples Reef")+
   theme(legend.position = "none")
 
 napl_boxplot
@@ -448,7 +610,7 @@ napl_boxplot
 
 ```
 
-**Figures 5-7: Lobster Carapace Sizes at sites outside of Marine Protected Areas in 2012 and 2017** Lobster carapace (mm) data collected at three Long-Term Ecological Research sites outside of Marine Protected Areas in the Santa Barbara Channel: Arroyo Quemado, (n = 38 in 2012, n = 68 in 2017), Carpinteria (n = 78 in 2012, n = 705 in 2017), and Mohawk Reef (n = 83 in 2012, n = 178 in 2017). Mean lobster size only differed significantly between 2012 and 2017 at Mohawk Reef; pairwise comparison at all other sites yielded no significant difference (IN LINE REFERENCING). ADD CORRESPONDING NUMBERS TO EACH GRAPH TITLE.
+**Figures 6-8: Lobster Carapace Sizes at sites outside of Marine Protected Areas in 2012 and 2017** Lobster carapace (mm) data collected at three Long-Term Ecological Research sites outside of Marine Protected Areas in the Santa Barbara Channel: Arroyo Quemado, (n = 38 in 2012, n = 68 in 2017), Carpinteria (n = 78 in 2012, n = 705 in 2017), and Mohawk Reef (n = 83 in 2012, n = 178 in 2017). Mean lobster size only differed significantly between 2012 and 2017 at Mohawk Reef; pairwise comparison at all other sites yielded no significant difference (IN LINE REFERENCING). ADD CORRESPONDING NUMBERS TO EACH GRAPH TITLE.
 
 ```{r, echo=FALSE}
 #Make boxplots for Non-MPA sites
@@ -466,7 +628,7 @@ aq_boxplot <- ggplot(aq_box, aes(x = YEAR, y = SIZE)) +
   theme_classic()+
   geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 5: Arroyo Quemado")+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 6: Arroyo Quemado")+
   theme(legend.position = "none")
 
 aq_boxplot
@@ -484,7 +646,7 @@ carp_boxplot <- ggplot(carp_box, aes(x = YEAR, y = SIZE)) +
   theme_classic()+
   geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 6: Carpinteria")+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 7: Carpinteria")+
   theme(legend.position = "none")
 
 carp_boxplot
@@ -502,7 +664,7 @@ mohk_boxplot <- ggplot(mohk_box, aes(x = YEAR, y = SIZE)) +
   theme_classic()+
   geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 7: Mohawk Reef")+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 8: Mohawk Reef")+
   theme(legend.position = "none")
 
 mohk_boxplot
@@ -510,7 +672,7 @@ mohk_boxplot
 ```
 
 
-```{r, echo=FALSE}
+```{r}
 #Statistics for table
 
 #Isla Vista
@@ -557,154 +719,7 @@ aq_mean_diff <- aq_mean_2017 - aq_mean_2012
 ```
 
 
-```{r, echo=FALSE, include= FALSE}
-
-#Filter for just 2017 results for Part 2, and Exploratory Histogram and QQ Plots
-
-size_2017 <- size_tidy %>% 
-  filter(YEAR == "2017") %>%
-  select(SIZE, Site)
-
-carapace_hist <- ggplot(size_2017, aes(x = SIZE))+
-  geom_histogram(bins = 23, aes(fill = Site))+
-  facet_wrap(~Site)
-
-carapace_hist
-
-carapace_qq <- ggplot(size_2017, aes(sample = SIZE))+
-  geom_qq()+
-  facet_wrap(~Site)
-
-carapace_qq
-
-#The data looks roughly normally distributed, and all sites have a sample size of greater than 30. 
-
-```
-
-```{r echo=FALSE, message=FALSE, include=FALSE}
-
-#Levene's Test for Equal Variances, since we have more than two groups
-#H0: Variances are equal
-#HA: Variances are not equal
-
-carapace_levene <- leveneTest(SIZE ~ Site, data = size_2017)
-carapace_levene
-
-#We reject the null hypothesis of equal variances (p < .001) based on Levene's Test.  However, we can examine the variances of each site to see if the largest is less than four times the smallest variance.  
-
-carapace_variances <- size_2017 %>% 
-  group_by(Site) %>% 
-  summarize(
-    Variance = var(SIZE)
-  )
-
-carapace_variances
-
-#The largest variance is well less than four times the smallest variance, so we can assume accept the null hypothesis of equal variances and run an ANOVA.
-
-#H0: Mean carapace sizes are equal at all sites
-#HA: Mean carapace sizes vary for lobsters from at least two sites.
-
-carapace_aov <- aov(SIZE ~ Site, data = size_2017)
-summary(carapace_aov)
-
-#boxplot for sizes in case we want to include this
-size_2017_boxplot <- ggplot(size_2017, aes(x = Site, y = SIZE))+
-  geom_boxplot()+
-  scale_x_discrete()+
-  ylab("Carapace Size (mm)")+
-  xlab("Site")+
-  theme_classic()+
-  geom_jitter(width = .2, alpha = .4, aes(color = Site))+
-  theme(legend.position = "none")
-##Improve color scheme here?
-
-#Making a summary table and column graph for lobster sizes
-
-size_summary <- size_2017 %>% 
-  group_by(Site) %>%
-  summarize(
-    'Median' = round(median(SIZE), 2),
-    'Maximum' = round(max(SIZE), 2),
-    'Mean' = round(mean(SIZE), 2),
-    'Standard_Deviation' = round(sd(SIZE), 2),
-    'Sample_Size' = length(SIZE)
-  )
-
-size_2017_col <- ggplot(size_summary, aes(x = Site, y = Mean))+
-  geom_col(fill = "indianred2")+
-  geom_errorbar(aes(ymin=Mean-Standard_Deviation, ymax=Mean+Standard_Deviation), size = .3, width = .2)+
-  theme_classic()+
-  labs(x = "Site", y = "Carapace Size (mm)")+
-  scale_y_continuous(breaks=seq(0,100, by = 20), expand = c(0,0), limits = c(0,100))
-
-#With p = .0085, we reject the null, and assume mean carapace length varies between lobsters from at least two sites. At least two populations were taken from populations with different means.
-
-#Post-hoc testing using Tukey's HSD
-
-carapace_ph <- TukeyHSD(carapace_aov)
-carapace_ph
-
-#Lobster sizes differed significantly only between Naples Reef and Carpenteria, and Naples Reef and Isla Vista. 
-
-#Cohen's d
-
-naples_2017 <- size_2017 %>% 
-  filter(Site == "Naples Reef")
-
-carp_2017 <- size_2017 %>% 
-  filter(Site == "Carpinteria")
-
-iv_2017 <- size_2017 %>% 
-  filter(Site == "Isla Vista")
-
-nap_carp_effsize <- cohen.d(naples_2017$SIZE, carp_2017$SIZE)
-nap_carp_effsize
-
-nap_iv_effsize <- cohen.d(naples_2017$SIZE, iv_2017$SIZE)
-nap_iv_effsize
-
-#Small effect size between both locations
-
-```
-
-
-**Figure 8: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel in 2017**  Mean lobster carapace length (mm) measured at five locations: Arroyo Quemado, Carpinteria, Isla Vista, Mohawk Reef, and Naples Reef, all Long-Term Ecological Research sites.  Mean carapace length only differed significantly between Naples Reef and Isla Vista, and between Naples Reef and Carpinteria; all other pairwise comparisons yielded no significant difference (IN-LINE REFERENCING) (one-way ANOVA, F(X) = X, p = x), with post-hoc Tukey’s HSD (alpha = 0.05). 
-
-```{r, echo=FALSE, message=FALSE, include=FALSE}
-
-#Comparing the lobster sizes across the sites, and putting this information in a table.
-
-size_summary <- size_2017 %>% 
-  group_by(Site) %>% 
-  summarize("Mean Size" = round(mean(SIZE), 2),
-            "Standard Deviation" = round(sd(SIZE), 2),
-            "Sample Size" = length(Site))
-
-size_summary
-
-size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size", "Standard Deviation", "Sample Size"), align = "c") %>% 
-  kable_styling(bootstrap_options = c("striped"))
-  
-size_final
-
-```
-
-```{r, echo=FALSE, include=FALSE}
-
-size_final
-
-```
-
-```{r, echo=FALSE}
-
-
-size_2017_boxplot
-
-```
-
-**Figure 9: Mean Lobster Carapace Length at five LTER sites in the Santa Barbara Channel in 2017** Mean lobster carapace length (mm) measured at five locations: Arroyo Quemado, Carpinteria, Isla Vista, Mohawk Reef, and Naples Reef. Boxes indicate the 25th and 75th percentiles of observations, lower and upper boundaries respectively, and the dark center line indicates the median at each location. Whiskers, or the vertical lines, indicate observations within 1.5 times the interquartile range indicated by the box.  Solitary points indicate measurements outside of the interquartile whisker range. Colored jitter points indicate individual lobster size measurements.
-
+#Part 4
 
 ```{r, echo=FALSE, message=FALSE}
 #Make table with counts of legal and illegal lobsters for each site
@@ -714,16 +729,20 @@ legal_sizes <- lobster_size_tidy %>%
   filter(YEAR == 2017) %>% 
   filter(SIZE != "-99999") %>% 
   select(YEAR, SITE, SIZE) %>% 
-  mutate(legality = ifelse(SIZE > 83, "legal", "illegal")) %>% 
+  mutate(legality = ifelse(SIZE > 82.6, "legal", "illegal")) %>% 
   count(SITE, legality) %>% 
   spread(legality, n) %>% 
-  select(-SITE)
+  select(-SITE) 
 
-rownames(legal_sizes) <- c("AQUE", "CARP", "IVEE", "MOHK", "NAPL")
+rownames(legal_sizes) <- c("Arroyo Quemado", "Carpinteria", "Isla Vista", "Mohawk Reef", "Naples Reef")
+
+legal_sizes
+
+
   
 ```
 
-```{r, echo=FALSE, include=FALSE, message=FALSE}
+```{r, echo=FALSE, include=FALSE}
 #Make table with proportions
 
 legal_prop <- prop.table(as.matrix(legal_sizes), 1)
@@ -731,7 +750,17 @@ legal_prop <- prop.table(as.matrix(legal_sizes), 1)
 legal_prop
 ```
 
-```{r, echo=FALSE, include=FALSE, message=FALSE}
+```{r}
+
+legal_final <- kable(legal_sizes, col.names = c("Illegally Sized Lobsters", "Legally Sized Lobsters"), align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped"))
+
+legal_final
+
+```
+
+
+```{r, echo=FALSE, include=FALSE}
 #Run chi square test on the legalilty table (original data, not prop table)
 
 legal_x2 <- chisq.test(legal_sizes) 
