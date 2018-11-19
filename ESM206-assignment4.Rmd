@@ -414,15 +414,6 @@ aq_effsize
 
 #effect size is small (-0.256)
 
-#Run a MWU test - 2012 data doesn't look totally normal
-
-# H0: There is not a signficant difference in ranks for 2012 and 2017
-# HA: There is a significant difference in ranks
-
-aq_mwu <- wilcox.test(aq_2012, aq_2017)
-aq_mwu
-
-#Retain the null, there is not a significant difference in ranks. p = 0.1618
 ```
 
 
@@ -532,15 +523,6 @@ iv_effsize
 
 #effect size is small (-0.377)
 
-#Run a MWU test - 2012 data doesn't look totally normal
-
-# H0: There is not a signficant difference in ranks for 2012 and 2017
-# HA: There is a significant difference in ranks
-
-iv_mwu <- wilcox.test(iv_2012, iv_2017)
-iv_mwu
-
-#Reject the null, there is a significant difference in ranks. p = 0.008488
 ```
 
 
@@ -597,8 +579,10 @@ iv_box <- lobster_size_tidy %>%
 iv_boxplot <- ggplot(iv_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()+
   theme_classic()+
+  geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Isla Vista")
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 4: Isla Vista")+
+  theme(legend.position = "none")
 
 iv_boxplot
 
@@ -613,10 +597,16 @@ napl_box <- lobster_size_tidy %>%
 napl_boxplot <- ggplot(napl_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()+
   theme_classic()+
+  geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Naples Reef")
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 5: Naples Reef")+
+  theme(legend.position = "none")
 
 napl_boxplot
+
+ #theme_classic()+
+  #geom_jitter(width = .2, alpha = .4, aes(color = Site))+
+  #theme(legend.position = "none")
 
 ```
 
@@ -636,8 +626,10 @@ aq_box <- lobster_size_tidy %>%
 aq_boxplot <- ggplot(aq_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()+
   theme_classic()+
+  geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Arroyo Quemado")
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 6: Arroyo Quemado")+
+  theme(legend.position = "none")
 
 aq_boxplot
 
@@ -652,8 +644,10 @@ carp_box <- lobster_size_tidy %>%
 carp_boxplot <- ggplot(carp_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()+
   theme_classic()+
+  geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Carpinteria")
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 7: Carpinteria")+
+  theme(legend.position = "none")
 
 carp_boxplot
 
@@ -668,10 +662,60 @@ mohk_box <- lobster_size_tidy %>%
 mohk_boxplot <- ggplot(mohk_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()+
   theme_classic()+
+  geom_jitter(width = 0.2, alpha = 0.4, aes(color = YEAR))+
   scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
-  labs(x = "Year", y = "Carapace Size (mm)", title = "Mohawk Reef")
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Figure 8: Mohawk Reef")+
+  theme(legend.position = "none")
 
 mohk_boxplot
+
+```
+
+
+```{r}
+#Statistics for table
+
+#Isla Vista
+
+iv_mean_2012 <- mean(iv_2012)
+iv_sd_2012 <- sd(iv_2012)
+iv_mean_2017 <- mean(iv_2017)
+iv_sd_2017 <- sd(iv_2017)
+iv_mean_diff <- iv_mean_2017 - iv_mean_2012
+
+#Naples
+
+napl_mean_2012 <- mean(napl_2012)
+napl_sd_2012 <- sd(napl_2012)
+napl_mean_2017 <- mean(napl_2017)
+napl_sd_2017 <- sd(napl_2017)
+napl_mean_diff <- napl_mean_2017 - napl_mean_2012
+
+#Carpenteria
+
+carp_mean_2012 <- mean(carp_2012)
+carp_sd_2012 <- sd(carp_2012)
+carp_mean_2017 <- mean(carp_2017)
+carp_sd_2017 <- sd(carp_2017)
+carp_mean_diff <- carp_mean_2017 - carp_mean_2012
+
+#Mohawk
+
+mohk_mean_2012 <- mean(mohk_2012)
+mohk_sd_2012 <- sd(mohk_2012)
+mohk_mean_2017 <- mean(mohk_2017)
+mohk_sd_2017 <- sd(mohk_2017)
+mohk_mean_diff <- mohk_mean_2017 - mohk_mean_2012
+
+#Aque
+
+aq_mean_2012 <- mean(aq_2012)
+aq_sd_2012 <- sd(aq_2012)
+aq_mean_2017 <- mean(aq_2017)
+aq_sd_2017 <- sd(aq_2017)
+aq_mean_diff <- aq_mean_2017 - aq_mean_2012
+
+
 ```
 
 
