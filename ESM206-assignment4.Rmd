@@ -64,7 +64,7 @@ traps_tidy <- lobster_traps %>%
 
 ```
 
-#Part 1 (Claire)
+#Part 1
 ```{r, echo=FALSE}
 
 abundance_summary <- lobster_size %>%
@@ -84,58 +84,66 @@ traps_summary <- traps_simple %>%
 
 ```
 
-```{r, echo=FALSE}
-# my attempt at joining the data before graphing and or getting both graphs for one location on the same plane
-
-abundance_traps <- full_join(abundance_summary, traps_summary)
 
 
-both_scatter <- ggplot(abundance_traps, aes(x = YEAR))+
-  geom_line(aes(y=count, color = "count"))+
-  geom_line(aes(y=traps, color = "traps"))+
-  facet_wrap(~SITE)+
-  theme_light()+
-  scale_x_continuous(expand = c(0,0))+
-  labs( x = "Year",
-        y = "Count")
-  
+```{r, echo = FALSE, include = FALSE}
 
-both_scatter
+abundance_traps <- full_join(abundance_summary, traps_summary) %>% 
+      mutate(Site=
+    case_when(
+      SITE == "NAPL" ~ "Naples Reef",
+      SITE == "AQUE" ~ "Arroyo Quemado",
+      SITE == "MOHK" ~ "Mohawk Reef",
+      SITE == "IVEE" ~ "Isla Vista",
+      SITE == "CARP" ~ "Carpinteria"))
+
+
+
+traps_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = traps))+
+  geom_point(aes(color = Site))+
+  geom_line(aes(color = Site))+
+  theme_classic()+
+  labs(x = "Year", y= "Number of Traps")
+traps_scatter
 
 
 
 
 ```
+
+**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+
+
+
 ```{r, echo = FALSE}
-
-traps_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = traps))+
-  geom_point(aes(color = SITE))+
-  geom_line(aes(color = SITE))+
-  theme_classic()+
-  labs(x = "Year", y= "Traps")
-traps_scatter
-
 count_scatter <- ggplot(abundance_traps, aes(x = YEAR, y = count))+
-  geom_point(aes(color = SITE))+
-  geom_line(aes(color = SITE))+
+  geom_point(aes(color = Site))+
+  geom_line(aes(color = Site))+
   theme_classic()+
   labs(x = "Year", y = "Lobsters Counted")
 
 count_scatter
-
-
 ```
 
-**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks.
+
+
+
 
 ```{r, echo=FALSE}
 #Display Graphs
 
 traps_scatter
 
+
+```
+**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs. Lobster trap bouy counts at Isla Vista and Naples marine protected areas are both zero across between 2012 - 2017. Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+
+```{r, echo = FALSE}
+
 count_scatter
 
 ```
+**Figure 2: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of lobsters counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
 
 
 #Part 2 (Andrew)
@@ -703,4 +711,9 @@ legal_x2
 #There is a significant association between site location and the amount of legal/illegal lobsters
 
 ```
+
+
+
+References:
+1. Reed, D. . 2017. SBC LTER: Reef: Abundance, size and fishing effort for California Spiny Lobster (Panulirus interruptus), ongoing since 2012. Santa Barbara Coastal Long Term Ecological Research Project. doi:10.6073/pasta/81ce20b29614ec99d85d54907eaa3e8e
 
