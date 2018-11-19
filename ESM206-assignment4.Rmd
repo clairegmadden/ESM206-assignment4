@@ -136,14 +136,14 @@ traps_scatter
 
 
 ```
-**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs. Lobster trap bouy counts at Isla Vista and Naples marine protected areas are both zero across between 2012 - 2017. Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+**Figure 1: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of commercial lobster trap bouys counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs. Lobster trap bouy counts at Isla Vista and Naples marine protected areas are both zero across between 2012 - 2017. Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^4$.
 
 ```{r, echo = FALSE}
 
 count_scatter
 
 ```
-**Figure 2: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of lobsters counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^1$.
+**Figure 2: Fishing Pressure at Five Locations in the Santa Barbara Channel (2012-2017)** Total annual number of lobsters counted at Arroyo Quemado, Carpinteria, Isla Vista, Mohawk, and Naples reefs.  Data collected in lobster fishing season (October through March) every two to four weeks. Data used with permission of Santa Barbara Coastal Long Term Ecological Research Project $^4$.
 
 
 #Part 2 (Andrew)
