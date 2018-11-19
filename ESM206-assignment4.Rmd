@@ -259,16 +259,8 @@ nap_iv_effsize
 
 ```
 
-```{r}
 
-size_2017_col
-
-size_2017_boxplot
-
-```
-
-
-**Figure 1: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel in 2017** 
+**Figure 3: Mean Lobster Carapace Length at Five LTER Sites in the Santa Barbara Channel in 2017**  Mean lobster carapace length (mm) measured at five locations: Arroyo Quemado, Carpinteria, Isla Vista, Mohawk Reef, and Naples Reef, all Long-Term Ecological Research sites.  Mean carapace length only differed significantly between Naples Reef and Isla Vista, and between Naples Reef and Carpinteria; all other pairwise comparisons yielded no significant difference (IN-LINE REFERENCING) (one-way ANOVA, F(X) = X, p = x), with post-hoc Tukey’s HSD (alpha = 0.05). 
 
 ```{r, echo=FALSE, message=FALSE, include=FALSE}
 
@@ -277,24 +269,32 @@ size_2017_boxplot
 size_summary <- size_2017 %>% 
   group_by(Site) %>% 
   summarize("Mean Size" = round(mean(SIZE), 2),
+            "Standard Deviation" = round(sd(SIZE), 2),
             "Sample Size" = length(Site))
 
 size_summary
 
-size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size (mm)", "Sample Size"), align = "c") %>% 
+size_final <- kable(size_summary, col.names = c("Site", "Mean Carapace Size", "Standard Deviation", "Sample Size"), align = "c") %>% 
   kable_styling(bootstrap_options = c("striped"))
   
 size_final
+
 ```
 
 ```{r, echo=FALSE}
 
-size_summary
-
 size_final
 
 ```
 
+```{r, echo=FALSE}
+
+
+size_2017_boxplot
+
+```
+
+**Figure 4: Mean Lobster Carapace Length at five LTER sites in the Santa Barbara Channel in 2017** Mean lobster carapace length (mm) measured at five locations: Arroyo Quemado, Carpinteria, Isla Vista, Mohawk Reef, and Naples Reef.  Boxes indicate the 25th and 75th percentiles of observations, lower and upper boundaries respectively, and the dark center line indicates the median at each location. Whiskers, or the vertical lines, indicate observations within 1.5 times the interquartile range indicated by the box.  Solitary points indicate measurements outside of the whisker range. Colored jitter points indicate individual lobster size measurements.
 
 #Part 3 (Bridget)
 
