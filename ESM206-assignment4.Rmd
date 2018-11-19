@@ -180,13 +180,15 @@ carapace_variances
 carapace_aov <- aov(SIZE ~ Site, data = size_2017)
 summary(carapace_aov)
 
-#boxplot for ANOVA in case we want to include this
-lobster_anova <- ggplot(size_2017, aes(x = Site, y = SIZE))+
+#boxplot for sizes in case we want to include this
+size_2017_boxplot <- ggplot(size_2017, aes(x = Site, y = SIZE))+
   geom_boxplot()+
   scale_x_discrete()+
   ylab("Carapace Size (mm)")+
   xlab("Site")+
-  theme_classic()
+  theme_classic()+
+  geom_jitter(width = .2, alpha = .4, aes(color = Site))+
+  theme(legend.position = "none")
 ##Improve color scheme here?
 
 #Making a summary table and column graph for lobster sizes
@@ -242,7 +244,7 @@ nap_iv_effsize
 
 size_2017_col
 
-lobster_anova
+size_2017_boxplot
 
 ```
 
@@ -559,8 +561,9 @@ napl_effsize
 #effect size is small (-0.283)
 ```
 
+**Figures 4-5: Lobster Carapace Sizes at sites inside Marine Protected Areas in 2012 and 2017** Caption
 
-```{r, echo=FALSE, include=FALSE}
+```{r, echo=FALSE}
 
 #Make boxplots for MPA sites
 
@@ -573,7 +576,10 @@ iv_box <- lobster_size_tidy %>%
   group_by(YEAR)
 
 iv_boxplot <- ggplot(iv_box, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
+  geom_boxplot()+
+  theme_classic()+
+  scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Isla Vista")
 
 iv_boxplot
 
@@ -587,12 +593,15 @@ napl_box <- lobster_size_tidy %>%
 
 napl_boxplot <- ggplot(napl_box, aes(x = YEAR, y = SIZE)) +
   geom_boxplot()+
-  theme_classic()
+  theme_classic()+
+  scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Naples Reef")
 
 napl_boxplot
 
 ```
 
+**Figures 6-8: Lobster Carapace Sizes at sites outside of Marine Protected Areas in 2012 and 2017** Caption
 
 ```{r, echo=FALSE}
 #Make boxplots for Non-MPA sites
@@ -606,7 +615,10 @@ aq_box <- lobster_size_tidy %>%
   group_by(YEAR)
 
 aq_boxplot <- ggplot(aq_box, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
+  geom_boxplot()+
+  theme_classic()+
+  scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Arroyo Quemado")
 
 aq_boxplot
 
@@ -619,7 +631,10 @@ carp_box <- lobster_size_tidy %>%
   group_by(YEAR)
 
 carp_boxplot <- ggplot(carp_box, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
+  geom_boxplot()+
+  theme_classic()+
+  scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Carpinteria")
 
 carp_boxplot
 
@@ -632,7 +647,10 @@ mohk_box <- lobster_size_tidy %>%
   group_by(YEAR)
 
 mohk_boxplot <- ggplot(mohk_box, aes(x = YEAR, y = SIZE)) +
-  geom_boxplot()
+  geom_boxplot()+
+  theme_classic()+
+  scale_y_continuous(breaks = seq(0, 160, by = 20), limits = c(0,160))+
+  labs(x = "Year", y = "Carapace Size (mm)", title = "Mohawk Reef")
 
 mohk_boxplot
 ```
